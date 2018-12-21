@@ -1,4 +1,4 @@
-#VTT OpenVA
+# VTT OpenVA
 
 VTT Open VA platform consist of software components that are used as building blocks of visual analytics tools:
 * Adatabase that stores the application data in a standard domain independent form
