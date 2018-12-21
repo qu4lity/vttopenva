@@ -9,3 +9,6 @@ VTT Open VA platform consist of software components that are used as building bl
 VTT OpenVA is independent of the underlying data collection solution.The data can come from several sources, also in realtime. The data to beanalyzed is loaded from the sources to the database through a uniform data interface.
 
 Example data base can be found at: https://drive.google.com/open?id=1Mfn4G_TOhZ5WHCvG2wlaauion3NYnluh. 
+
+## To do
+Installation instructions, documentation.
