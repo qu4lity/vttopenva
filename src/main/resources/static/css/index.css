@@ -1,0 +1,507 @@
+<!-- OpenVA - Open software platform for visual analytics
+//
+// Copyright (c) 2018, VTT Technical Research Centre of Finland Ltd
+// All rights reserved.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    1) Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//    2) Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//    3) Neither the name of the VTT Technical Research Centre of Finland nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// @author Pekka Siltanen
+-->
+@CHARSET "UTF-8";
+
+html {
+	position: relative;
+	min-height: 100%;
+	overflow-y: scroll;
+}
+
+body {
+	padding-top: 5px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 12px;
+  	color: #333;
+  	background-color: #fff;
+}
+
+.body-container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.bigTable {     
+/*	min-width: 410px;  */
+	margin-right: 30px;
+	table-layout: fixed;
+  	width: 100%; /* must have this set */
+}
+
+.bigTable thead, .bigTable tbody { display: block;}
+
+.bigTable tbody {
+	     padding-right: 15px;
+	         margin-right: 10px;
+    height: 200px;    
+  
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+}
+
+.smallTable {     
+	width: 410px;  
+	table-layout: fixed;
+}
+
+/* hack for upDeep demo */
+.miniTable {     
+	width: 90px;  
+	table-layout: fixed;
+	margin-bottom: 0px !important;
+}
+tr.angular-ui-tree-empty {
+    height: 1px !important;
+}
+
+
+.smallTable thead, .smallTable tbody { display: block;}
+
+.smallTable tbody {
+	     padding-right: 15px;
+	         margin-right: 10px;
+    height: 90px;   
+    min-width: 410px;       
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+}
+
+
+.ui-autocomplete-input {
+    min-width: 80px;  
+    width: 80px; 
+}
+
+.legend rect {
+    fill: white;
+    stroke: black;
+    opacity: 0.8;
+}
+
+.row-fluid{
+    white-space: nowrap;
+}
+.row-fluid .col-sm-1 {
+    display: inline-block;
+}
+
+
+
+
+.chart_row
+{
+	height:300px;
+	vertical-align:middle;
+}
+
+.ui-dialog .ui-dialog-title {
+	font-size: xx-small;
+	float: left;
+	margin: .1em 0;
+	white-space: nowrap;
+	width: 90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
+
+.treeView {
+	-moz-user-select: none;
+	position: relative;
+}
+
+.treeView ul {
+	margin: 0 0 0 -1.5em;
+	padding: 0 0 0 1.5em;
+}
+
+.treeView ul ul { //
+	background: url('../img/verti.png') repeat-y left;
+}
+
+.treeView li.lastChild>ul {
+	background-image: none;
+}
+
+.treeView li {
+	margin: 0;
+	padding: 0; //
+	background: url('../img/hori.png') no-repeat top left;
+	list-style-position: inside;
+	list-style-image: none;
+	list-style-image: url('../img/right.png');
+	cursor: auto;
+}
+
+.treeView li.collapsibleListOpen {
+	list-style-image: url('../img/minus.png');
+	cursor: pointer;
+}
+
+.treeView li.collapsibleListClosed {
+	list-style-image: url('../img/plus.png');
+	cursor: pointer;
+}
+
+.treeView li li {
+	background-image: none; //
+	background-image: url('../img/hori.png');
+	padding-left: 1.5em;
+}
+
+.treeView li.lastChild {
+	background-image: none; //
+	background-image: url('../img/verti.png');
+}
+
+.treeView li.collapsibleListOpen {
+	background-image: none; //
+	background-image: url('../img/hori.png');
+}
+
+.treeView li.collapsibleListOpen.lastChild {
+	background-image: none; //
+	background-image: url('../img/hori.png');
+}
+
+div.bar {
+	display: inline-block;
+	width: 20px;
+	height: 75px; /* We'll override this later */
+	background-color: teal;
+	margin-right: 2px;
+}
+
+
+/*
+Bootstrap 3.1 overrides from http://bootply.com
+
+This CSS code should follow the 'bootstrap.css'
+in your HTML file.
+
+license: MIT
+author: bootply.com
+*/
+
+#centerdiv {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e5e5e5;
+}
+.white-bg {
+ background-color: white;
+  border-bottom: 5px solid #E30612;
+    height: 50px;
+}
+
+.title {
+  font-family: "Open Sans";
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #1C52A4;
+}
+
+.logo {
+  display: block;
+  margin-top: -2px;
+  margin-bottom: 19px;
+  background-image: url(../img/applicationlogo.png);
+  background-size: 50px;
+  width:60px;
+  height: 50px;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  text-indent: -9999px;
+  position: absolute;
+  z-index: 51;
+}
+
+.openvalogo {
+  display: block;
+  width: 113px;
+  height: 50px;
+  margin-top: -2px;
+  margin-bottom: 19px;
+  background-image: url(../img/openva.png);
+  background-size: 113px;
+  height: 40px;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  text-indent: -9999px;
+  position: absolute;
+  z-index: 51;
+}
+
+#draggable { 
+	width: 150px; 
+	height: 150px; 
+	padding: 0.5em; 
+}
+
+.override-padding {
+	-webkit-padding-start: 0px !important;
+}
+
+
+
+
+
+
+.selectionComponent {
+   border:1px solid black;
+   border-radius: 25px;
+   padding: 5px;
+}   
+
+.hidden {
+    display: none!important;
+    visibility: collapse!important;
+}   
+   
+   
+#bootstrap-override .nav>li>a {
+    padding: 10px 5px;
+}       
+
+
+.sidebar1 {
+    position: fixed;
+    top: 87px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+     width: 300px;
+}
+
+.sidebar2 {
+    position: fixed;
+    top:87px;
+    bottom: 0;
+    left: 300px;
+    z-index: 1000;
+    display: block;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+     width: 300px;
+}
+   
+      
+@media (min-width: 768px) {
+    .main {
+        padding-right: 40px;
+        padding-left: 220px; /* 180 + 40 */
+    }
+}
+
+
+.downloadLink {
+    background-color: #0000ff3d;
+    color: white;
+    padding: 14px 25px;
+    text-align: center; 
+    text-decoration: none;
+    display: inline-block;
+}
+
+.downloadLink:hover {
+    background-color: #00ffff;
+}
+
+.treeNodeText {
+    color: #337ab7;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 10px;
+}
+
+.treeNodeTitle {
+    color: #000080;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 14px;
+}
+
+.treeTableTitle {
+    color: #337ab7;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 18px;
+}
+
+
+td.treeTableCell {
+  padding: 5px !important;
+}
+
+.inputText {
+    color: black;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 10px;
+}
+
+.radioBoxes {
+    color: black;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 10px;
+  	padding-right: 5px !important;
+    padding-left: 5px !important;
+}
+
+.gi-small {
+	font-size: 0.5em;
+}
+
+.gi-large {
+	font-size: 2em;
+}
+
+/* updeep demo tabs require this */
+.nav>li>a {
+    padding: 10px 8px !important;
+}
+   
+.searchTitle {
+    color: #337ab7;
+    text-decoration: none;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 12px;;
+}    
+      
+.searchInput {
+    height: 14px !important;
+    color: black !important;
+    text-decoration: none !important;
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+  	font-size: 12px !important;
+} 
+
+
+table.updeepmain {
+  	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  	font-size: 10px;
+    font-weight: bold;
+    line-height: 1.4em;
+    font-style: normal;
+    border-collapse:separate;
+}
+
+.updeepmain tbody td{
+    padding:3px;
+    text-align:center;
+    background-color:#DEF3CA;
+    border: 2px solid #E7EFE0;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+    color:#666;
+    text-shadow:1px 1px 1px #fff;
+}
+
+.updeepmain  th{
+    padding:3px;
+    color:#fff;
+    text-shadow:1px 1px 1px #568F23;
+    border:1px solid #93C01E;
+    border-bottom:3px solid #93C01E;
+    background-color:#93C01E;
+    background:-webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.02, rgb(123,192,67)),
+        color-stop(0.51, rgb(139,198,66)),
+        color-stop(0.87, rgb(158,217,41))
+        );
+    background: -moz-linear-gradient(
+        center bottom,
+        rgb(123,192,67) 2%,
+        rgb(139,198,66) 51%,
+        rgb(158,217,41) 87%
+        );
+    -webkit-border-top-left-radius:5px;
+    -webkit-border-top-right-radius:5px;
+    -moz-border-radius:5px 5px 0px 0px;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
+}   
+
+.updeepmain thead th:empty{
+    background:transparent;
+    border:none;
+}
+
+
+
+.modal-dialog {
+  position:absolute;
+  top:50% !important;
+  transform: translate(0, -50%) !important;
+  -ms-transform: translate(0, -50%) !important;
+  -webkit-transform: translate(0, -50%) !important;
+  margin:auto 5%;
+  width:90%;
+  height:80%;
+}
+.modal-content {
+  min-height:250;
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0; 
+}
+.modal-body {
+  position:absolute;
+  top:5px; 
+  left:0;
+  right:0;
+  overflow-y:auto;
+}
+.modal-footer {
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+}
+      

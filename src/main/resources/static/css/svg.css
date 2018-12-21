@@ -1,0 +1,409 @@
+<!-- OpenVA - Open software platform for visual analytics
+//
+// Copyright (c) 2018, VTT Technical Research Centre of Finland Ltd
+// All rights reserved.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    1) Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//    2) Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//    3) Neither the name of the VTT Technical Research Centre of Finland nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// @author Pekka Siltanen
+
+-->
+
+/* svgzoompan */
+
+path {
+  stroke-width: 2;
+}
+path.svg-pan-zoom-control-element {
+    fill: black;
+}
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: #aad5ff;
+  color: #400040;
+  border-radius: 2px;
+  z-index: 1000;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+   z-index: 1000;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+    z-index: 1000;
+}
+
+.axis path_scplot,.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	font-family: sans-serif;
+	font-size: 11px;
+}
+
+.axis path,.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+/* .x.axis path { */
+/* 	display: none; */
+/* } */
+
+.line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+
+
+/* boxplot */
+.center-line {
+	fill: none;
+	stroke: black;
+	stroke-width: 1.5px;
+}
+.outlier-point {
+  stroke:black;
+  stroke-width:1;
+  fill:white; 
+}
+.whisker-line {
+	fill: none;
+	stroke: black;
+	stroke-width: 1.5px;
+}
+.median-line {
+	fill: none;
+	stroke: black;
+	stroke-width: 2px;
+}
+
+legend {
+	font-size: 12px;
+}
+
+.bar rect {
+	fill: steelblue;
+	shape-rendering: crispEdges;
+}
+
+.bar-histogram {
+	fill: #eaeaea;
+	stroke: #000;
+}
+
+
+.line-hist-mean {
+	stroke: #0000ff;
+	stroke-width: 2.5px;
+}
+
+.line-hist-std {
+	stroke: #00ff00;
+	stroke-width: 2.5px;
+}
+
+.line-hist-lowerlimit, .line-hist-upperLimit {
+	stroke: #400040;
+	stroke-width: 1.5px;
+	stroke-dasharray:5,5;
+}
+
+.line-hist-alarmUpperLimit, .line-hist-alarmLowerlimit {
+	stroke: #ff0000;
+	stroke-width: 1.5px;
+	stroke-dasharray:5,5;
+}
+
+.line-hist-min, .line-hist-max {
+	stroke: #fc8603;
+	stroke-width: 2.5px;
+}
+
+.bar text {
+	fill: #fff;
+}
+
+.axis path,.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.selection {
+	stroke: gray;
+	stroke-width: 2px;
+	stroke-dasharray: 4px;
+	stroke-opacity: 0.5;
+	fill: transparent;
+}
+
+.bar--negative {
+    fill: #0000FF;
+}
+
+.bar--positive {
+    fill: #0000FF;
+}
+
+.bar-meanline {
+	stroke: #00ff40;
+	stroke-width: 2.5px;
+}
+
+
+.dot {
+  stroke: #000;
+}
+
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
+}
+
+
+/* heatmap: */
+text.variableLabel {
+    font: 14px Arial;
+        text-anchor: start !important;
+}
+
+text.titleLabel {
+    font: 14px Arial;
+}
+
+text.valueLabel {
+  font: 11px Arial;
+    z-index: 55;
+}
+
+text.mainTitle {
+	  font: 16px Arial;
+	  fill: black;
+	  font-weight: bold;
+} 
+
+text.smallMainTitle {
+	  font: 10px Arial;
+	  fill: black;
+	  font-weight: bold;
+} 
+
+line.narrowLine {
+	stroke: black;
+	stroke-width: 1px;
+}
+
+text.xAxisTitle, text.yAxisTitle {
+	  font: 14px Arial;
+	  fill: black;
+} 
+
+text.xAxisSmallTitle, text.yAxisSmallTitle {
+	  font: 8px Arial;
+	  fill: black;
+} 
+
+      #tooltip {
+        position: absolute;
+        width: 200px;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        z-index: 999;
+      }
+      
+      
+/* timeseries */
+.ts-line {
+	stroke: black;
+	stroke-width: 1.5px;
+}
+.ts-line-red {
+	stroke:#E74C3C;
+	stroke-width: 1.5px;
+}
+.ts-line-black {
+	stroke:#000000;
+	stroke-width: 1.5px;
+}
+.ts-line-blue {
+	stroke:#3498DB;
+	stroke-width: 1.5px;
+}
+
+.ts-line-green {
+	stroke:#229954;
+	stroke-width: 1.5px;
+}
+
+.ts-line-orange {
+	stroke:#D35400;
+	stroke-width: 1.5px;
+}
+
+.ts-line-yellow {
+	stroke:#F7DC6F;
+	stroke-width: 1.5px;
+}
+
+
+.ts-smooth-line {
+	stroke:#0000ff;
+	stroke-width: 2.5px;
+}
+
+.ts-smooth-line-red {
+	stroke:#E74C3C;
+	stroke-width: 2.5px;
+}
+.ts-smooth-line-black {
+	stroke:#000000;
+	stroke-width: 2.5px;
+}
+.ts-smooth-line-blue {
+	stroke:#3498DB;
+	stroke-width: 2.5px;
+}
+
+.ts-smooth-line-green {
+	stroke:#229954;
+	stroke-width: 2.5px;
+}
+
+.ts-smooth-line-orange {
+	stroke:#D35400;
+	stroke-width: 2.5px;
+}
+
+.ts-smooth-line-yellow {
+	stroke:#F7DC6F;
+	stroke-width: 2.5px;
+}
+
+.ts-mean{
+	stroke: #0000ff;
+	stroke-width: 2.5px;
+}
+
+.ts-upperlimit, .ts-lowerlimit {
+	stroke: #ff8000;
+	stroke-width: 1.5px;
+	stroke-dasharray:5,5;
+}
+
+
+.ts-outlier_lowerlimit, .ts-outlier_lowerlimit {
+	stroke: #0000ff;
+	stroke-width: 1px;
+	stroke-dasharray:5,5;
+}
+
+.ts-referencevalue {
+	stroke: #ff00ff;
+	stroke-width: 1.5px;
+	stroke-dasharray:15,10,5,5,5,10;
+}
+.ts-alarm_upperlimit, .ts-alarm_lowerlimit {
+	fill: none;
+	stroke: #ff0000;
+	stroke-width: 1.5px;
+}
+
+.ts-point {
+	r: 3;
+	stroke: blue;
+	stroke-width: 1px;
+	fill:#000000;
+}
+
+/* legend */
+.legend-box {
+	stroke: black;
+	stroke-width: 1px;
+	fill:none;
+}
+
+/* contour plot */
+.contour-line {
+	stroke: #00ff00;
+	stroke-width: 1px;
+}
+
+/* scatterplot */
+.line-sc-lowerLimit, .line-sc-upperLimit {
+	stroke: #400040;
+	stroke-width: 1.5px;
+}
+
+.line-sc-alarmUpperLimit, .line-sc-alarmLowerlimit {
+	stroke: #ff0000;
+	stroke-width: 1.5px;
+}
+
+.line-sc-regression {
+	stroke: #0000ff;
+	stroke-width: 1.5px;
+}
+      
+      

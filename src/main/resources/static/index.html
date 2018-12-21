@@ -1,0 +1,112 @@
+<!-- OpenVA - Open software platform for visual analytics
+//
+// Copyright (c) 2018, VTT Technical Research Centre of Finland Ltd
+// All rights reserved.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    1) Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//    2) Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//    3) Neither the name of the VTT Technical Research Centre of Finland nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=11" />
+    
+    <title>OpenVA</title>
+    
+    
+    <link href="css/index.css" rel="stylesheet">
+    <link href="css/svg.css" rel="stylesheet">
+    <link href="css/tree.css" rel="stylesheet">
+    <link href="css/angular-tooltips.min.css" rel="stylesheet">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-tree/2.22.5/angular-ui-tree.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/jquery.datetimepicker.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css" rel="stylesheet">
+  </head>
+  <body ng-app="app">
+    <div ui-view ></div>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.3/angular-resource.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.4.2/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular-route.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular-cookies.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-tree/2.22.5/angular-ui-tree.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.7.4/d3.js"></script>
+	<script src="https://d3js.org/d3-contour.v1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.4/d3-legend.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-aria.min.js"></script>
+ 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular-touch.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script> 	
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  	<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  	    
+    <script src="app.js"></script>
+    <script src="js/spin.js"></script>
+	<script src="js/svgcommon.js"></script>
+	<script src="js/d3_legend.js"></script>
+	<script src="js/angular-tooltips.min.js"></script>
+	
+    <script src="services/analyticsservice.js"></script>
+	<script src="services/configurationservice.js"></script>
+	<script src="services/metadataservice.js"></script>
+	<script src="services/parameterservice.js"></script>
+	<script src="services/visualizationservice.js"></script>
+    
+    <script src="./templates/ui/navigation/navigationController.js"></script>
+    <script src="./templates/ui/visualizationarea/visualizationAreaController.js"></script>
+ 	<script src="./templates/ui/parameterselection/objectselectionController.js"></script>
+ 	<script src="./templates/ui/parameterselection/variableselectionController.js"></script>
+	<script src="./templates/ui/visualizationselection/selectedObjectsController.js"></script>
+	<script src="./templates/ui/visualizationselection/selectedVariablesController.js"></script>
+	<script src="./templates/ui/visualizationselection/visualizationsController.js"></script>
+	<script src="./templates/ui/visualizationselection/additionalInputController.js"></script>
+	<script src="./templates/ui/imagetypeselection/imagetypeSelectionController.js"></script>
+	<script src="./templates/ui/datetimeselection/datetimeselectionController.js"></script>
+	<script src="./templates/ui/timeunitselection/timeunitselectionController.js"></script>
+
+
+	<script src="./templates/visualizations/visualizationController.js"></script>
+	<script src="./templates/visualizations/calculatedValues.js"></script>			
+	<script src="./templates/visualizations/histogram.js"></script>
+	<script src="./templates/visualizations/timeseries.js"></script>
+	<script src="./templates/visualizations/boxplot.js"></script>
+	<script src="./templates/visualizations/correlationmatrix.js"></script>
+	<script src="./templates/visualizations/contour.js"></script>
+	<script src="./templates/visualizations/scatterplot.js"></script>	
+	<script src="./templates/visualizations/singlevalue.js"></script>		
+	<script src="./templates/visualizations/rawdata.js"></script>		
+	<script src="./templates/visualizations/barchart.js"></script>	
+  </body>
+</html>

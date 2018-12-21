@@ -1,0 +1,95 @@
+<!-- OpenVA - Open software platform for visual analytics
+//
+// Copyright (c) 2018, VTT Technical Research Centre of Finland Ltd
+// All rights reserved.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    1) Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//    2) Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//    3) Neither the name of the VTT Technical Research Centre of Finland nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=11" />
+
+<head>
+	<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+	<link href="css/index.css" rel="stylesheet"/>
+	<script type="text/javascript">
+  	function show() {
+  	 	 var url = window.location.href;
+  	 	 console.log(url)
+  	  	 var msg = document.getElementById('error');
+  	  	 if( url.search( 'error' ) > 0 ) {
+  	       msg.style.display = "block";
+  	  	}
+  	  	msg = document.getElementById('logout');
+  	  	 if( url.search( 'logout' ) > 0 ) {
+  	       msg.style.display = "block";
+  	  	}
+    	msg = document.getElementById('expired');
+    	if( url.search( 'expired' ) > 0 ) {
+    	    msg.style.display = "block";
+    	}
+  	}
+  </script>
+<title>Please Login</title>
+</head>
+<body onload="show()">
+	<div class="container-fluid">
+		<div class="row header white-bg">
+			<div class="col-lg-1">
+				<a href="www.vtt.fi" class="logo" title="VTT">VTT</a>
+			</div>
+			<div class="col-lg-10"></div>
+			<div class="col-lg-1">
+				<div class="navbar-header title">
+					<a href="https://github.com/pekka-siltanen/vttopenva" class="openvalogo" title="OpenVA">OpenVA</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+        <form name="f" th:action="@{/login}" method="post">               
+            <fieldset>
+                <legend>Please Login</legend>
+                <div id="error" style="display: none;">    
+                    Invalid username and password.
+                </div>
+                <div id="logout" style="display: none;"> 
+                    You have been logged out.
+                </div>
+				<div id="expired" style="display: none;"> 
+                    Your session has expired because of inactivity.
+                </div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username"/>        
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"/>    
+                <div class="form-actions">
+                    <button type="submit" class="btn">Log in</button>
+                </div>
+            </fieldset>
+        </form>
+		</div>
+	</div>
+</body>
+</html>
