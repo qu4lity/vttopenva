@@ -1,0 +1,18 @@
+version: '2'
+services:
+    openvapostgres:
+      image: pekkasiltanen/postgresopenva
+      container_name: openvapostgres
+      ports:
+        - "5432:5432"  
+    openvaplusr:
+      image: pekkasiltanen/openvaplusr
+      container_name: openvaplusr
+      links:
+        - openvapostgres
+      ports:
+        - "8080:8080"
+      depends_on:
+        - openvapostgres     
+                  
+      
