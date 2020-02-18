@@ -28,7 +28,7 @@
 /**
  * VisualizationRESTController
  * 
- * @author Pekka Siltanen, Markus Ylikerälä
+ * @author Pekka Siltanen, Markus Ylikerï¿½lï¿½
  *
  */
 package fi.vtt.openva.controller;
@@ -78,7 +78,9 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -88,7 +90,7 @@ import org.json.simple.parser.ParseException;
 @RequestMapping("/query")
 public class VisualizationRESTController{
 
-	private static Logger log = Logger.getLogger(VisualizationRESTController.class);
+	private static Logger log = LogManager.getLogger(VisualizationRESTController.class);
 
 
 	@Autowired

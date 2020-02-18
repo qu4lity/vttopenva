@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +59,7 @@ import fi.vtt.openva.repositories.RepositoryService;
 @RestController
 @RequestMapping("/query")
 public class VariableRESTController {
-	private static Logger log = Logger.getLogger(VariableRESTController.class);
+	private static Logger log = LogManager.getLogger(VariableRESTController.class);
 	@Autowired
 	private RepositoryService repositoryService;
 
