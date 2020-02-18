@@ -38,7 +38,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -57,12 +58,12 @@ import fi.vtt.openva.domain.Visualization;
 /**
  * RepositoryServiceImpl.
  *
- * @author Markus Ylikerälä, Pekka Siltanen
+ * @author Markus Ylikerï¿½lï¿½, Pekka Siltanen
  */
 @Service
 public class RepositoryServiceImpl implements RepositoryService {
 	
-	private static Logger log = Logger.getLogger(RepositoryServiceImpl.class);
+	private static Logger log = LogManager.getLogger(RepositoryServiceImpl.class);
 
 	@Autowired
 	private ApplicationRepository applicationRepository;

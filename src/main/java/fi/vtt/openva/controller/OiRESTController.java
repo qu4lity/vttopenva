@@ -35,7 +35,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +52,7 @@ import fi.vtt.openva.repositories.RepositoryService;
 /**
  * OiRESTController
  * 
- * @author Pekka Siltanen, Markus Ylikerälä
+ * @author Pekka Siltanen, Markus Ylikerï¿½lï¿½
  *
  */
 
@@ -60,7 +60,7 @@ import fi.vtt.openva.repositories.RepositoryService;
 @RequestMapping("/query")
 public class OiRESTController {
 	
-	private static Logger log = Logger.getLogger(OiRESTController.class);
+	private static Logger log = LogManager.getLogger(OiRESTController.class);
 	@Autowired
 	private RepositoryService repositoryService;
 	
