@@ -30,7 +30,6 @@
  * @author Pekka Siltanen
  */
 
-
 package fi.vtt.openva;
 
 import org.springframework.beans.factory.annotation.Value;

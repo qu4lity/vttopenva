@@ -26,101 +26,148 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // @author Pekka Siltanen
 -->
-	<div class="row selectionComponent">
-	  <div class="col-sm-12" id="bootstrap-override"> 
-	  	<div id="exTab1">	
-			<ul  class="nav nav-pills">
-				<li class="active">
-	        		<a class ='treeNodeText' href="#1a" data-toggle="tab">Indicator</a>
-				</li>
-				<li>
-	        		<a class ='treeNodeText' href="#2a" data-toggle="tab">Calculated</a>
-				</li>
-				<li>
-					<a class ='treeNodeText' href="#3a" data-toggle="tab">Measurement</a>
-				</li>
-				<li>
-					<a class ='treeNodeText' href="#4a" data-toggle="tab">Background</a>
-				</li>
-			</ul>
-	
-			<div class="tab-content clearfix">
-				  <div class="tab-pane active" id="1a">
-				  <div class="table-responsive">
-					<table ui-tree id="tree-root" class="table table-responsive bigTable">
-				      <tbody ui-tree-nodes ng-model="data.index">
-				        <tr ng-repeat="node in data.index" ui-tree-node>
-				        	<td class="treeTableCell">
-				        		<a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)">
-				              		<span class="glyphicon glyphicon-check gi-small"></span>
-				            	</a>
-				        	</td>
-						  	<td class="treeTableCell">
-				          		<a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)">
-				          			{{node.title}}
-				          		</a>
-				          	</td>
-						</tr>
-				      </tbody>
-				    </table>
-				  </div>
-				 </div>
-				<div class="tab-pane" id="2a">
-					<table ui-tree id="tree-root" class="table table-responsive bigTable">
-				      <tbody ui-tree-nodes ng-model="data.calculated">
-				        <tr ng-repeat="node in data.calculated" ui-tree-node>
-						  <td class="treeTableCell">
-				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)">
-				              <span class="glyphicon glyphicon-check"></span>
-				            </a>
-				          </td>
-				          <td class="treeTableCell">
-				          	<a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)">
-				          		{{node.title}}
-				          	</a>	
-				          </td>
-						</tr>
-				      </tbody>
-				    </table>
-				</div>
-				<div class="tab-pane" id="3a">
-					<table ui-tree id="tree-root" class="table table-responsive bigTable">
-				      <tbody ui-tree-nodes ng-model="data.measurement">
-				        <tr ng-repeat="node in data.measurement" ui-tree-node>
-						  <td class="treeTableCell">
-				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)">
-				              <span class="glyphicon glyphicon-check"></span>
-				            </a>
-				          </td>
-				          <td class="treeTableCell">
-				          <a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)">
-				          	{{node.title}}
-				          </a>	
-				          </td>
-						</tr>
-				      </tbody>
-				    </table>
-				</div>
-	        	<div class="tab-pane" id="4a">
-					<table ui-tree id="tree-root" class="table table-responsive bigTable">
-				      <tbody ui-tree-nodes ng-model="data.background">
-				        <tr ng-repeat="node in data.background" ui-tree-node>
-						  <td>
-				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)">
-				              <span class="glyphicon glyphicon-check"></span>				              
-				            </a>
-				          </td>
-				          <td class="treeTableCell">
-				          <a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)">
-				          	{{node.title}}
-				          </a>	
-				          </td>
-						</tr>
-				      </tbody>
-				    </table>
+<div ng-repeat="group in data.groups">
+	<div ng-dropdown-multiselect='' options='group.variables'
+		selected-model='model' translation-texts='group.groupText'
+		events='myEventListeners' extra-settings='settings'></div>
+</div>
+<div id="exTab1">
+	<ul class="nav nav-pills">
+		<li ng-repeat="group in data.groups" ng-class="{active:$first}"><a
+			class='treeNodeText' href="#{{group.groupTitle}}" data-toggle="tab">{{group.groupName}}</a></li>
+		<!--				<li class="active"><a class='treeNodeText' href="#1a"data-toggle="tab">Element val</a></li> -->
+	</ul>
+	<div class="tab-content clearfix">
+		<div ng-repeat="group in data.groups" class="tab-pane"
+			ng-class="{active:$first}" id="{{group.groupTitle}}">
+			<div class="table-responsive">
+<!-- 				<div class="row"> -->
+<!-- 					<div class="col-lg-3 searchTitle">Search</div> -->
+<!-- 					<div class="col-lg-9"> -->
+<!-- 						<input type="text" ng-model="pattern" -->
+<!-- 							class="form-control ng-pristine ng-valid searchInput"> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				<div class="row">
+					<table ui-tree id="tree-root"
+						class="table table-responsive bigTable">
+						<tbody ui-tree-nodes ng-model="group">
+							<tr ng-repeat="node in group.variables track by $index"
+								ui-tree-node
+								ng-show="!pattern || treeFilter(node, pattern, supportedFields)">
+								<td class="treeTableCell"><a
+									class="pull-right btn btn-primary btn-xs" data-nodrag
+									ng-click="selectVariable(node)" ng-model="node"> <span
+										class="glyphicon glyphicon-check"></span>
+								</a></td>
+								<td class="treeTableCell"><a class='treeNodeText'
+									data-nodrag ng-click="selectVariable(node)" ng-model="node">{{node.title}}</a></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
-	  	</div>
-	
-	  </div>
+		</div>
+	</div>
 </div>
+
+
+<!-- 	<div class="row selectionComponent"> -->
+<!-- 	  <div class="col-sm-12" id="bootstrap-override">  -->
+<!-- 	  	<div id="exTab1">	 -->
+<!-- 			<ul  class="nav nav-pills"> -->
+<!-- 				<li class="active"> -->
+<!-- 	        		<a class ='treeNodeText' href="#1a" data-toggle="tab">Indicator</a> -->
+<!-- 				</li> -->
+<!-- 				<li> -->
+<!-- 	        		<a class ='treeNodeText' href="#2a" data-toggle="tab">Calculated</a> -->
+<!-- 				</li> -->
+<!-- 				<li> -->
+<!-- 					<a class ='treeNodeText' href="#3a" data-toggle="tab">Measurement</a> -->
+<!-- 				</li> -->
+<!--  				<li> --> 
+<!-- 					<a class ='treeNodeText' href="#4a" data-toggle="tab">Background</a> -->
+<!-- 				</li> --> 
+<!-- 			</ul> -->
+	
+<!-- 			<div class="tab-content clearfix"> -->
+<!-- 				  <div class="tab-pane active" id="1a"> -->
+<!-- 				  <div class="table-responsive"> -->
+<!-- 					<table ui-tree id="tree-root" class="table table-responsive bigTable"> -->
+<!-- 				      <tbody ui-tree-nodes ng-model="data.index"> -->
+<!-- 				        <tr ng-repeat="node in data.index" ui-tree-node> -->
+<!-- 				        	<td class="treeTableCell"> -->
+<!-- 				        		<a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				              		<span class="glyphicon glyphicon-check gi-small"></span> -->
+<!-- 				            	</a> -->
+<!-- 				        	</td> -->
+<!-- 						  	<td class="treeTableCell"> -->
+<!-- 				          		<a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				          			{{node.title}} -->
+<!-- 				          		</a> -->
+<!-- 				          	</td> -->
+<!-- 						</tr> -->
+<!-- 				      </tbody> -->
+<!-- 				    </table> -->
+<!-- 				  </div> -->
+<!-- 				 </div> -->
+<!-- 				<div class="tab-pane" id="2a"> -->
+<!-- 					<table ui-tree id="tree-root" class="table table-responsive bigTable"> -->
+<!-- 				      <tbody ui-tree-nodes ng-model="data.calculated"> -->
+<!-- 				        <tr ng-repeat="node in data.calculated" ui-tree-node> -->
+<!-- 						  <td class="treeTableCell"> -->
+<!-- 				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				              <span class="glyphicon glyphicon-check"></span> -->
+<!-- 				            </a> -->
+<!-- 				          </td> -->
+<!-- 				          <td class="treeTableCell"> -->
+<!-- 				          	<a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				          		{{node.title}} -->
+<!-- 				          	</a>	 -->
+<!-- 				          </td> -->
+<!-- 						</tr> -->
+<!-- 				      </tbody> -->
+<!-- 				    </table> -->
+<!-- 				</div> -->
+<!-- 				<div class="tab-pane" id="3a"> -->
+<!-- 					<table ui-tree id="tree-root" class="table table-responsive bigTable"> -->
+<!-- 				      <tbody ui-tree-nodes ng-model="data.measurement"> -->
+<!-- 				        <tr ng-repeat="node in data.measurement" ui-tree-node> -->
+<!-- 						  <td class="treeTableCell"> -->
+<!-- 				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				              <span class="glyphicon glyphicon-check"></span> -->
+<!-- 				            </a> -->
+<!-- 				          </td> -->
+<!-- 				          <td class="treeTableCell"> -->
+<!-- 				          <a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				          	{{node.title}} -->
+<!-- 				          </a>	 -->
+<!-- 				          </td> -->
+<!-- 						</tr> -->
+<!-- 				      </tbody> -->
+<!-- 				    </table> -->
+<!-- 				</div> -->
+<!-- 	        <div class="tab-pane" id="4a"> -->
+<!-- 					<table ui-tree id="tree-root" class="table table-responsive bigTable"> -->
+<!-- 				      <tbody ui-tree-nodes ng-model="data.background"> -->
+<!-- 				        <tr ng-repeat="node in data.background" ui-tree-node> -->
+<!-- 						  <td> -->
+<!-- 				            <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				              <span class="glyphicon glyphicon-check"></span>				               -->
+<!-- 				            </a> -->
+<!-- 				          </td> -->
+<!-- 				          <td class="treeTableCell"> -->
+<!-- 				          <a class ='treeNodeText' data-nodrag ng-click="selectVariable(this)"> -->
+<!-- 				          	{{node.title}} -->
+<!-- 				          </a>	 -->
+<!-- 				          </td> -->
+<!-- 						</tr> -->
+<!-- 				      </tbody> -->
+<!-- 				    </table> -->
+<!-- 				</div> -->
+<!-- 					 -->
+<!-- 			</div>		 -->
+<!-- 	  	</div> -->
+	
+<!-- 	  </div> -->
+<!-- </div> -->

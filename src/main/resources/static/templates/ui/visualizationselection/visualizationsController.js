@@ -33,7 +33,7 @@
 //	var counter = 0;
 	
 	angular.module('app')
-	.controller('visualizationsController', ["$scope","$rootScope", "parameterService","metadataService","visualizationService","configurationService","$uibModal", function ($scope, $rootScope,parameterService,metadataService,visualizationService,configurationService, $uibModal) {
+	.controller('visualizationsController', ["$scope","$rootScope", "parameterService","metadataService","visualizationService","configurationService","analysisService","$uibModal", function ($scope, $rootScope,parameterService,metadataService,visualizationService,configurationService,analysisService, $uibModal) {
 		   $scope.data = {
 				    visualizations: [],
 				    method: null,
@@ -47,9 +47,9 @@
 				$scope.data.visualizations = data;
 
 			}
-			
+
 		
-		$scope.visualizeWithTimeUnit = function (ev) {
+		$scope.visualizeWithParameters = function (ev) {
 			$scope.data.method = this.node.method; 
 			$scope.data.title = this.node.title;
 			$scope.data.counter++;
@@ -71,6 +71,9 @@
 			visualizationService.add("visualization-"+ $scope.data.counter++);			
 		};
 		
+		$scope.cancel = function () {
+			analysisService.cancel();
+		};	
 		
 	}]);
 }());

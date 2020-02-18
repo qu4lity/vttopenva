@@ -1,7 +1,30 @@
-// default package
-// Generated Aug 29, 2018 12:00:35 PM by Hibernate Tools 5.2.0.Beta1
-
 package fi.vtt.openva.domain;
+//OpenVA - Open software platform for visual analytics
+//
+//Copyright (c) 2018, VTT Technical Research Centre of Finland Ltd
+//All rights reserved.
+//Redistribution and use in source and binary forms, with or without
+//modification, are permitted provided that the following conditions are met:
+//
+// 1) Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2) Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3) Neither the name of the VTT Technical Research Centre of Finland nor the
+//    names of its contributors may be used to endorse or promote products
+//    derived from this software without specific prior written permission.
+//
+//THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND ANY
+//EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY
+//DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -20,17 +43,21 @@ public class Visualization implements java.io.Serializable {
 	private String method;
 	private String title;
 	private String oitypetitle;
-	private String oistype;
+	private String oitypecount;
 	private Integer oismin;
 	private Integer oismax;
 	private Integer propertymin;
 	private Integer propertymax;
 	private String datatype;
-	private String variabletype;
+	private String propertytype;
 	private String engine;
 	private LocalDateTime timeCreated;
 	private LocalDateTime timeDeleted;
 	private String applicationTitle;
+	private String formats;
+	private String oitypeProperty;
+	private String oitypePropertyValue;
+	private String quanttype;
 
 	public Visualization() {
 	}
@@ -39,25 +66,29 @@ public class Visualization implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public Visualization(int id, String method, String title, String oitypetitle, String oistype, Integer oismin,
-			Integer oismax, Integer propertymin, Integer propertymax, String datatype, String variabletype,
-			String engine, LocalDateTime timeCreated, LocalDateTime timeDeleted, String application,
-			String applicationTitle) {
+	public Visualization(int id, String method, String title, String oitypetitle, String oitypecount, Integer oismin,
+			Integer oismax, Integer propertymin, Integer propertymax, String datatype, String propertytype,
+			String engine, LocalDateTime timeCreated, LocalDateTime timeDeleted, String applicationTitle,
+			String formats, String oitypeProperty, String oitypePropertyValue, String quanttype) {
 		this.id = id;
 		this.method = method;
 		this.title = title;
 		this.oitypetitle = oitypetitle;
-		this.oistype = oistype;
+		this.oitypecount = oitypecount;
 		this.oismin = oismin;
 		this.oismax = oismax;
 		this.propertymin = propertymin;
 		this.propertymax = propertymax;
 		this.datatype = datatype;
-		this.variabletype = variabletype;
+		this.propertytype = propertytype;
 		this.engine = engine;
 		this.timeCreated = timeCreated;
 		this.timeDeleted = timeDeleted;
 		this.applicationTitle = applicationTitle;
+		this.formats = formats;
+		this.oitypeProperty = oitypeProperty;
+		this.oitypePropertyValue = oitypePropertyValue;
+		this.quanttype = quanttype;
 	}
 
 	@Id
@@ -98,13 +129,13 @@ public class Visualization implements java.io.Serializable {
 		this.oitypetitle = oitypetitle;
 	}
 
-	@Column(name = "oistype")
-	public String getOistype() {
-		return this.oistype;
+	@Column(name = "oitypecount")
+	public String getOitypecount() {
+		return this.oitypecount;
 	}
 
-	public void setOistype(String oistype) {
-		this.oistype = oistype;
+	public void setOitypecount(String oitypecount) {
+		this.oitypecount = oitypecount;
 	}
 
 	@Column(name = "oismin")
@@ -152,13 +183,13 @@ public class Visualization implements java.io.Serializable {
 		this.datatype = datatype;
 	}
 
-	@Column(name = "variabletype")
-	public String getVariabletype() {
-		return this.variabletype;
+	@Column(name = "propertytype")
+	public String getPropertytype() {
+		return this.propertytype;
 	}
 
-	public void setVariabletype(String variabletype) {
-		this.variabletype = variabletype;
+	public void setPropertytype(String propertytype) {
+		this.propertytype = propertytype;
 	}
 
 	@Column(name = "engine")
@@ -188,7 +219,6 @@ public class Visualization implements java.io.Serializable {
 		this.timeDeleted = timeDeleted;
 	}
 
-
 	@Column(name = "application_title")
 	public String getApplicationTitle() {
 		return this.applicationTitle;
@@ -196,6 +226,42 @@ public class Visualization implements java.io.Serializable {
 
 	public void setApplicationTitle(String applicationTitle) {
 		this.applicationTitle = applicationTitle;
+	}
+
+	@Column(name = "formats")
+	public String getFormats() {
+		return this.formats;
+	}
+
+	public void setFormats(String formats) {
+		this.formats = formats;
+	}
+
+	@Column(name = "oitype_property")
+	public String getOitypeProperty() {
+		return this.oitypeProperty;
+	}
+
+	public void setOitypeProperty(String oitypeProperty) {
+		this.oitypeProperty = oitypeProperty;
+	}
+
+	@Column(name = "oitype_property_value")
+	public String getOitypePropertyValue() {
+		return this.oitypePropertyValue;
+	}
+
+	public void setOitypePropertyValue(String oitypePropertyValue) {
+		this.oitypePropertyValue = oitypePropertyValue;
+	}
+
+	@Column(name = "quanttype")
+	public String getQuanttype() {
+		return this.quanttype;
+	}
+
+	public void setQuanttype(String quanttype) {
+		this.quanttype = quanttype;
 	}
 
 }

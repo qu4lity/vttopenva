@@ -56,10 +56,6 @@ function d3SumChart(dataObject,id, onClickFunction, tooltipFunction) {
 	var window = canvasSize.window;
     var w = window.width;
     var h = window.height;
-	var legendMargin = canvasSize.legendMargin;
-    
-	var values = dataObject.values;	
-
 	var x = d3.scaleBand().rangeRound([0, w- (margin.left + margin.right)], 0.1);
 	var y = d3.scaleLinear().range([h -(margin.top+ margin.bottom),0]);	
 
@@ -74,12 +70,11 @@ function d3SumChart(dataObject,id, onClickFunction, tooltipFunction) {
 	data.push({name:"", value:dataObject.calculatedValue});
 	x.domain(data.map(function(d) { return d.name; }));
 	y.domain([0,Math.ceil(dataObject.calculatedValue)]).nice(); 
-	
-	var xTranslation = y(0);
+
 	var xAxis = d3.axisBottom(x);
-	//addXAxis(chart,xAxis,xTranslation, w- (margin.left + margin.right));
 	
-	var yTranslation = x(0);
+	//var yTranslation = x(0);
+	var yTranslation = 0;
 	var yAxis = d3.axisLeft(y).ticks(10).tickFormat(d3.format("d"));
 	addYAxis(chart,yAxis,yTranslation, h- (margin.top + margin.bottom));
 	

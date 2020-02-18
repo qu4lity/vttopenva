@@ -28,11 +28,13 @@
 package fi.vtt.openva.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.vtt.openva.dao.PropertyEnum;
 import fi.vtt.openva.domain.OitypeProperty;
 
 /**
@@ -40,57 +42,23 @@ import fi.vtt.openva.domain.OitypeProperty;
  * 
  * @author Markus Ylikerälä, Pekka Siltanen
  *
+ * @author TTEYLI
  */
 @Transactional(readOnly = true, timeout=30)
 public interface OitypePropertyRepository extends CrudRepository<OitypeProperty, Integer> {
 
 	
-	
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#findAll()
-	 */
 	List<OitypeProperty> findAll();
-
-	/**
-	 * Find by oitype id and propertytype.
-	 *
-	 * @param oitypeId the oitype id
-	 * @param propertyEnum the property enum
-	 * @return the list
-	 */
-	List<OitypeProperty> findByOitypeIdAndPropertytype(int oitypeId, PropertyEnum propertyEnum);
-
-	/**
-	 * Find by oitype id.
-	 *
-	 * @param oitypeId the oitype id
-	 * @return the list
-	 */
 	List<OitypeProperty> findByOitypeId(int oitypeId);
+	Optional<OitypeProperty> findById(Integer valueOf);
 
-	/**
-	 * Find by id.
-	 *
-	 * @param valueOf the value of
-	 * @return the oitype property
-	 */
-	OitypeProperty findById(Integer valueOf);
-
-	/**
-	 * Find by id in.
-	 *
-	 * @param vars the vars
-	 * @return the list
-	 */
 	List<OitypeProperty> findByIdIn(List<Integer> vars);
-
-	/**
-	 * Find by propertytype.
-	 *
-	 * @param propertyEnum the property enum
-	 * @return the list
-	 */
-	List<OitypeProperty> findByPropertytype(PropertyEnum propertyEnum);
 	
+	@Query("SELECT x FROM OitypeProperty x WHERE x.id in (SELECT y.oitypeProperty.id FROM GroupMember y WHERE y.propertyGroup.id = :propertyGroupId)")
+	List<OitypeProperty> findByPropertyGroup(@Param("propertyGroupId") Integer groupId);
+	
+	List<OitypeProperty> findByTitleInAndCodesIdIsNull(List<String> titles);
+	List<OitypeProperty> findByTitleInAndCodesIdIsNotNull(List<String> titles);
+
+	List<OitypeProperty> findByTitle(String title);
 }

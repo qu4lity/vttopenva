@@ -39,7 +39,7 @@
 		}
 		
 		
-		function correlationmatrixChart(response,window,id,visualizationMethod) {
+		function correlationmatrixChart(response,window_,id,visualizationMethod) {
 			
 			var data =  trimForCorrMat(response);
 			var canvasSize = getCanvasSize();
@@ -48,8 +48,6 @@
 			var window = canvasSize.window;
 		    var w = window.width;
 		    var h = window.height;
-			var legendMargin = canvasSize.legendMargin;
-			var rightMargin = canvasSize.legendMargin.right + 10;
 			
 			
 			var mainTitle = data.title;
@@ -125,11 +123,16 @@
 	        	if (d.col <= d.row) {
 	        		return ("WHITE")
 	        	} else {
-			    	if (d.value == "?") {return "WHITE" } 
-			    	else {return corZscale(d.value)};}
-	        	})
-		    	.attr("stroke", "black")
-		    	.attr("stroke-width", 1);	
+			    	if (d.value == "?") {
+			    			return "WHITE"
+			    	} 
+			    	else {
+			    		return corZscale(d.value)
+			    	}
+			    }
+	        })
+		    .attr("stroke", "black")
+		    .attr("stroke-width", 1);	
 		    
 		    var fontsize ="14";
 		     if(data.corr.length > 4 && data.corr.length < 8) {

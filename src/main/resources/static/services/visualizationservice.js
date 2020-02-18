@@ -27,20 +27,19 @@
 //
 // @author Pekka Siltanen
 
-app.factory('visualizationService',['$rootScope','analysisService', 'parameterService',function($rootScope,analysisService, parameterService){
+app.factory('visualizationService',['analysisService', 'parameterService','$timeout',function(analysisService, parameterService,$timeout){
 		var visualizations = []; 
-		var visCounter = 0;
 		var spinner = [];
 		
 		function startAnalysis (id) {
 			spinner[id] = showSpinner(id);
 			return spinner;
-		};
+		}
 		
 		function endAnalysis(id) {
 			spinner[id].stop();
 			spinner[id] = null;
-		};
+		}
 		
 		function showSpinner(id) {
 			var opts = {
@@ -67,98 +66,120 @@ app.factory('visualizationService',['$rootScope','analysisService', 'parameterSe
 					}
 					var target = document.getElementById(id)
 					return new Spinner(opts).spin(target);
-		};
+		}
+		
+		function add(id){
+			var template = "./templates/visualizations/visualization.html";	
+			var visualisation = { 
+									template: template,
+									id: id
+								};
+			visualizations.push(visualisation);
+			return template;
+		}
+		
+		function addOpeningVisualizations() {
+//			parameterService.setVisualizationMethod("SailingBar");
+//			add("-opening-start1");
+//			$timeout(function(){ 
+//				parameterService.setVisualizationMethod("FuelOilBar");
+//				add("-opening-start2");
+//				$timeout(function(){ 
+//					parameterService.setVisualizationMethod("AuxBar");
+//					add("opening--start3");
+//					$timeout( function(){ 
+//						parameterService.clearVariables();
+//						parameterService.clearObjects();
+//					}, 2500);
+//				}, 2500);
+//			}, 2500);
+		}
+		
+		function runAnalysis(id,chartFunction,onClick,tooltip,params) {
+			startAnalysis(id);
+			analysisService.run(parameterService.getVisualizationMethod(),params).then(function(response) { 
+				var window = {width: 640, height:640};
+				var position = ((visualizations.length%10)*10)%150;
+				window.top = position;
+				window.left = position;
+				endAnalysis(id);
+				if (response == null) {
+					return;
+				}
+				if ("error" in response) {
+					showError("<strong>"+ response.error + "</strong>", id,parameterService.getVisualizationTitle(), window);
+					return;
+				}
+
+				if ("warning" in response){
+					showError("<strong>"+response.warning+ "</strong>" , id, parameterService.getVisualizationTitle(), window);
+				}
+				if (response.imagetype == "raster") {
+					if (response.width != null && response.height != null) {
+						showImage(response.image,id,parameterService.getVisualizationTitle(), window, response.width + 50, response.height + 90);
+					} else {
+						showImage(response.image,id,parameterService.getVisualizationTitle(), window,null,null);
+					}	 
+				} else if (response.imagetype == "vector") {
+					showSvg(response.image,id,parameterService.getVisualizationTitle(), window);
+				} else if (response.imagetype == "data") {
+					showNode(showRawdata(response),response.filename,parameterService.getVisualizationTitle(), window, response.width, response.height);
+				} else if (response.imagetype == "pdf") {
+//					if (response.width != null && response.height != null) {
+//						showNode(showPdfFile(response),response.file,parameterService.getVisualizationTitle(), window, parseInt(response.width) + 50, parseInt(response.height) + 70);
+//					} else {
+//						showNode(showPdfFile(response),response.file,parameterService.getVisualizationTitle(), window, null, null);
+//					}      
+					showNode(showLink(response.file),response.file,parameterService.getVisualizationTitle(), window, null, null);
+				} else if (response.imagetype == "multi_pdf") {
+//					var size = Object.keys(response).length-1;
+//					for (var  i=1; i< size; i++ ) {
+//						var fileName = "file_" + i;
+//						if (response.width != null && response.height != null) {
+//							showNode(showPdfFile(response[chartName]),response[chartName].file,parameterService.getVisualizationTitle(), window, response.width + 50, response.height + 70);
+//						} else {
+//							showNode(showPdfFile(response),response.file,parameterService.getVisualizationTitle(), window, null, null);
+//						} 
+//					}
+				} else if (response.imagetype == "multi_interactive"){
+//					var size = Object.keys(response).length-1;
+//					for (var i=1; i< size; i++ ) {
+//						var chartName = "chart_" + i;
+//						showChart(chartFunction(response[chartName],window,id,parameterService.getVisualizationMethod()), id,parameterService.getVisualizationTitle(), window);
+//					}
+				} else if (response.imagetype == "interactive"){
+					showChart(chartFunction(response,window,id,parameterService.getVisualizationMethod()), id,parameterService.getVisualizationTitle(), window);
+				} else {
+					showError("<strong>Imagetype " + response.imagetype + " not supported</strong>" , id, parameterService.getVisualizationTitle(), window);
+				}
+			});
+			return;
+		}
+		
+		function run(id,chartFunction,onClick,tooltip) {
+			var par = parameterService.getAllSelected();				
+			var params = {
+					"params":[
+					    {"oiids": par.selectedObjects}, 
+					    {"varids": par.selectedVariables},
+					    {"starttime":par.startTime},
+					    {"endtime":par.endTime},
+					    {"timeunit":par.timeUnit},
+					    {"imagetype":par.imagetype},
+					]
+				}
+			
+			runAnalysis(id,chartFunction,onClick,tooltip,params);
+			return;
+		}
 		
 		return {
 			startAnalysis: startAnalysis,
 			endAnalysis: endAnalysis,
-			add : function(id){
-				var template = "./templates/visualizations/visualization.html";	
-				var visualisation = { 
-										template: template,
-										id: id
-									};
-				visualizations.push(visualisation);
-				return template;
-			},	
+			addOpeningVisualizations: addOpeningVisualizations,
+			add : add,	
 
-			run : function(id,chartFunction,onClick,tooltip) {
-				var selectedObjects = parameterService.getObjectIds();
-				var selectedVariables = parameterService.getVariableIds(); 
-				var startTime = parameterService.getStartDateTime();
-				var endTime = parameterService.getEndDateTime();			
-				var timeUnit = parameterService.getTimeUnit();
-				var imagetype = parameterService.getImageType();
-				
-				var selectedVariableObjects = parameterService.getParametersByType("m");
-				for (var i = 0; i<selectedVariableObjects.length; i++ ){
-					selectedVariables.push(selectedVariableObjects[i].id);
-				}
-				selectedVariableObjects = parameterService.getParametersByType("i");
-				for (var i = 0; i<selectedVariableObjects.length; i++ ){
-					selectedVariables.push(selectedVariableObjects[i].id);
-				}
-				var filters = [];
-				var codeNames = ['site','sample_class','plant_species','plant_organ','year','sample_type','ashtype'];
-				for (var i = 0; i<codeNames.length; i++ ){
-					var codeName = codeNames[i];
-					var codeFilters = parameterService.getParametersByType(codeName);
-					for (var j=0; j<codeFilters.length; j++) {
-						var data = new Object();
-						filter = codeName + "=" + codeFilters[j].id;
-						filters.push(filter);
-					}
-				}
-				
-				var params = {
-						"params":[
-						    {"oiids": selectedObjects}, 
-						    {"varids":selectedVariables},
-						    {"ois_filter_list":filters},
-						    {"starttime":startTime},
-						    {"endtime":endTime},
-						    {"timeunit":timeUnit},
-						    {"imagetype":imagetype},
-						]
-					}
-				startAnalysis(id);
-				analysisService.run(parameterService.getVisualizationMethod(),params).then(function(response) { 
-					var window = {width: 640, height:640};
-					var position = ((visualizations.length%10)*10)%150;
-					window.top = position;
-					window.left = position;
-					endAnalysis(id);
-					if (response == null) {
-						return;
-					}
-		        	if ("error" in response) {
-		        		var leadingText  = "DeployR script: ";
-		        		var errorMsg = response.error.substring(response.error.indexOf(leadingText) + leadingText.length, response.error.length);
-		        		showError("<strong>"+ errorMsg + "</strong>", id,parameterService.getVisualizationTitle(), window);
-		        		return;
-		        	}
-
-		        	if ("warning" in response){
-		        		showError(response.warning, id,parameterService.getVisualizationTitle(), window);
-		        	}
-		        	if (response.imagetype == "raster") {
-		        		showImage(response.image,id,parameterService.getVisualizationTitle(), window);
-		        	} else if (response.imagetype == "vector") {
-		        		showSvg(response.image,id,parameterService.getVisualizationTitle(), window);
-		        	} else if (response.imagetype == "data") {
-		        		showLink(showRawdata(response), id,parameterService.getVisualizationTitle(), window);
-		        	} else if (response.imagetype == "multi_interactive"){
-		        		var size = Object.keys(response).length-1;
-		        		for (var  i=1; i< size; i++ ) {
-		        			var chartName = "chart_" + i;
-		        			showChart(chartFunction(response[chartName],window,id,parameterService.getVisualizationMethod()), id,parameterService.getVisualizationTitle(), window);
-		        		}
-		        	} else {
-		        		showChart(chartFunction(response,window,id,parameterService.getVisualizationMethod()), id,parameterService.getVisualizationTitle(), window);
-		        	}
-				});
-				return;
-			},
+			run : run,
 			show : function(node, id,title, window){
 				var a= node.parentNode;
 				var isComposed = false;
@@ -194,17 +215,19 @@ function showError(error,id,title,window){
 	var draggableId = draggable(title + " message", window.top,window.left,"centerdiv");
 	$('#' + id).prepend('<strong>' + error +'</strong>');
 	document.getElementById(draggableId).appendChild(d3.select("#" + id + "> strong").node());	
-	//removeSvgNode(id);
 	return;
 }
 
-
-
-function showImage(imgsrc,id,title,window){		
-	var draggableId = draggable(title, window.top,window.left,"centerdiv");
+function showImage(imgsrc,id,title,window,width,height){		
+	var draggableId = draggable(title, window.top,window.left,"centerdiv",width,height);
 	$('#' + id).prepend('<img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '" />');
 	document.getElementById(draggableId).appendChild(d3.select("#" + id + "> img").node());	
-	//removeSvgNode(id);
+	return;
+}
+
+function showNode(node,src,title,window,width,height){		
+	var draggableId = draggable(title, window.top,window.left,"centerdiv",width,height);
+	document.getElementById(draggableId).appendChild(node);	
 	return;
 }
 
@@ -232,11 +255,9 @@ function showSvg(imgsrc,id,title,window){
 	});
 }
 
-function showLink(node,id,title,window){		
-	var draggableId = draggable(title, window.top,window.left,"centerdiv");
-	document.getElementById(draggableId).appendChild(node);	
-	//removeSvgNode(id);
-	return;
+function showLink(url){		
+	var node = $("<a class='downloadLink' href='"+ url + "' target='_blank'\>Open file</a>").get(0);
+	return node;	
 }
 
 function showChart(node, id,title, window){
@@ -272,25 +293,36 @@ function removeSvgNode(id) {
 		}
 //	   addedNode.parentNode.RemoveChild(id);
 }
+//this is a really old legacy jQuery code that will be removed as soon as I have time
+function draggable (heading, top, left,parentId,width,height) {
+//	var target = document.getElementById(parentId);
+//	var pos ="" + left +" " + top;	
 
-
-function draggable (heading, top, left,parentId) {
-	var target = document.getElementById(parentId);
+	if (width == null || height == null) {
+		width = "auto";
+		height = "auto";
+	}
 	
 	var $result = $("<div>", {title: heading});
 	var resultId = $result.uniqueId().attr("id");
 
-	var pos ="" + left +" " + top;
 	var $dialog = $result.dialog({
 		position: {
 			my: 'left top',
 			at: 'left',
 			of: $('#centerdiv')
 		},
+		// hack trying to stop jumping to top 
+		dragStop: function(event, ui) {
+		        var iObj = ui.offset;
+		        if (iObj.top < 0) {
+		        	event.target.offsetParent.style.top = "0px";
+		        }
+		    },
 		draggable: true,
 		appendTo: '#' + parentId,
-		height:'auto',
-		width:'auto'
+		height:height,
+		width:width,
 	})
 	.parent().draggable({
 		containment: '#centerdiv' 

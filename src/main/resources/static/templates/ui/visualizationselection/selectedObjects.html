@@ -34,12 +34,12 @@
       <tbody ui-tree-nodes ng-model="data.ois">
         <tr ng-repeat="node in data.ois" ui-tree-node class="tree-node-content angular-ui-tree-handle">
 			<td class="treeTableCell" width="10%">
-            	<a class="pull-left btn btn-primary btn-xs" style="background-color:red" data-nodrag ng-click="remove(this)">
+            	<a class="pull-left btn btn-primary btn-xs" style="background-color:red" data-nodrag ng-click="removeOI(this)">
               	<span class="glyphicon glyphicon-remove" ></span>
             	</a>
           </td>
           <td class="treeTableCell" width="80%">
-				<a class ='treeNodeText' data-nodrag ng-click="remove(this)">
+				<a class ='treeNodeText' data-nodrag ng-click="removeOI(this)">
             		{{node.title}} ({{node.id}}) 
             	</a>
           </td>

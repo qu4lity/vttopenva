@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 //import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
@@ -163,25 +164,6 @@ public class OpenVAEnumType<T,E extends Enum<E>>  implements UserType, Serializa
            return false;
      }
 
-//     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
-//     throws HibernateException, SQLException
-//     {
-//           String value = rs.getString(names[0]);
-//           if (!rs.wasNull()) {
-//                 return enumMap.get(value);
-//           }
-//           return null;
-//     }
-//
-//     public void nullSafeSet(PreparedStatement ps, Object obj, int index)
-//     throws HibernateException, SQLException
-//     {
-//             if (obj == null) {
-//                   ps.setNull(index, sqlType);
-//             } else {
-//                   ps.setObject(index, valueMap.get(obj), sqlType);
-//             }
-//     }
 
      /* (non-Javadoc)
  * @see org.hibernate.usertype.UserType#replace(java.lang.Object, java.lang.Object, java.lang.Object)
@@ -207,39 +189,8 @@ public Object replace(Object original, Object target, Object owner)
              return new int[] {sqlType};
      }
 
-//	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor ssci, Object owner)
-//			throws HibernateException, SQLException {
-//	//	return nullSafeGet(rs, names, ssci, owner);
-//		
-//		   String value = rs.getString(names[0]);
-//           if (!rs.wasNull()) {
-//                 return enumMap.get(value);
-//           }
-//           return null;
-//           
-//	}
-//
-//	public void nullSafeSet(PreparedStatement ps, Object obj, int index, SharedSessionContractImplementor ssci)
-//			throws HibernateException, SQLException {
-//		//nullSafeSet(ps, obj, index, ssci);
-//		   if (obj == null) {
-//               ps.setNull(index, sqlType);
-//         } else {
-//        	 //System.err.println(index + "#" + valueMap + "#" + obj + "\t" + valueMap.get(obj));
-////        	 if(valueMap.get(obj) == null){
-////        		         		 
-////        		  //enumMap.put(obj.toString(), obj);
-////                  //valueMap.put(obj, obj.toString());
-////        	 }
-//               ps.setObject(index, valueMap.get(obj), sqlType);
-//         }
-//	}
 
-	/* (non-Javadoc)
- * @see org.hibernate.usertype.UserType#nullSafeGet(java.sql.ResultSet, java.lang.String[], org.hibernate.engine.spi.SessionImplementor, java.lang.Object)
- */
-@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor arg2, Object arg3)
+public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor arg2, Object arg3)
 			throws HibernateException, SQLException {
 		// TODO Auto-generated method stub
 		//return null;
@@ -254,8 +205,21 @@ public Object replace(Object original, Object target, Object owner)
 	/* (non-Javadoc)
 	 * @see org.hibernate.usertype.UserType#nullSafeSet(java.sql.PreparedStatement, java.lang.Object, int, org.hibernate.engine.spi.SessionImplementor)
 	 */
-	@Override
 	public void nullSafeSet(PreparedStatement arg0, Object arg1, int arg2, SessionImplementor arg3)
+			throws HibernateException, SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+			throws HibernateException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
 			throws HibernateException, SQLException {
 		// TODO Auto-generated method stub
 		

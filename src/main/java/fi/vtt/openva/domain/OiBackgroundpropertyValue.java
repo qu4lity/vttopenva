@@ -51,53 +51,21 @@ import javax.persistence.Table;
 @Table(name = "oi_backgroundproperty_value", schema = "public")
 public class OiBackgroundpropertyValue implements java.io.Serializable {
 
-	/** The id. */
 	private int id;
-	
-	/** The objectofinterest. */
 	private Objectofinterest objectofinterest;
-	
-	/** The oitype property. */
 	private OitypeProperty oitypeProperty;
-	
-	/** The oitype property title. */
 	private String oitypePropertyTitle;
-	
-	/** The oi title. */
 	private String oiTitle;
-	
-	/** The value. */
 	private Float backgroundValue;
-	
-	/** The codevalue. */
 	private String codeValue;
-	
-	/** The valid from. */
 	private LocalDateTime validFrom;
-	
-	/** The valid to. */
 	private LocalDateTime validTo;
-	
-	/** The time created. */
 	private LocalDateTime timeCreated;
-	
-	/** The time deleted. */
 	private LocalDateTime timeDeleted;
 	
-//	/** The title. */
-//	private String title;
-
-	/**
-	 * Instantiates a new oi backgroundproperty value.
-	 */
 	public OiBackgroundpropertyValue() {
 	}
 
-	/**
-	 * Instantiates a new oi backgroundproperty value.
-	 *
-	 * @param id the id
-	 */
 	public OiBackgroundpropertyValue(int id) {
 		this.id = id;
 	}
@@ -133,109 +101,54 @@ public class OiBackgroundpropertyValue implements java.io.Serializable {
 		return this.id;
 	}
 
-	/**
-	 * Sets the id.
-	 *
-	 * @param id the new id
-	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * Gets the objectofinterest.
-	 *
-	 * @return the objectofinterest
-	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "oi_id")
 	public Objectofinterest getObjectofinterest() {
 		return this.objectofinterest;
 	}
 
-	/**
-	 * Sets the objectofinterest.
-	 *
-	 * @param objectofinterest the new objectofinterest
-	 */
 	public void setObjectofinterest(Objectofinterest objectofinterest) {
 		this.objectofinterest = objectofinterest;
 	}
 
-	/**
-	 * Gets the oitype property.
-	 *
-	 * @return the oitype property
-	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "oitype_property_id")
 	public OitypeProperty getOitypeProperty() {
 		return this.oitypeProperty;
 	}
 
-	/**
-	 * Sets the oitype property.
-	 *
-	 * @param oitypeProperty the new oitype property
-	 */
 	public void setOitypeProperty(OitypeProperty oitypeProperty) {
 		this.oitypeProperty = oitypeProperty;
 	}
 
-	/**
-	 * Gets the oitype property title.
-	 *
-	 * @return the oitype property title
-	 */
 	@Column(name = "oitype_property_title")
 	public String getOitypePropertyTitle() {
 		return this.oitypePropertyTitle;
 	}
 
-	/**
-	 * Sets the oitype property title.
-	 *
-	 * @param oitypePropertyTitle the new oitype property title
-	 */
 	public void setOitypePropertyTitle(String oitypePropertyTitle) {
 		this.oitypePropertyTitle = oitypePropertyTitle;
 	}
 
-	/**
-	 * Gets the oi title.
-	 *
-	 * @return the oi title
-	 */
 	@Column(name = "oi_title")
 	public String getOiTitle() {
 		return this.oiTitle;
 	}
 
-	/**
-	 * Sets the oi title.
-	 *
-	 * @param oiTitle the new oi title
-	 */
 	public void setOiTitle(String oiTitle) {
 		this.oiTitle = oiTitle;
 	}
 
-	/**
-	 * Gets the value.
-	 *
-	 * @return the value
-	 */
 	@Column(name = "background_value", precision = 8, scale = 8)
-	public Float getValue() {
+	public Float getBackgroundValue() {
 		return this.backgroundValue;
 	}
 
-	/**
-	 * Sets the value.
-	 *
-	 * @param value the new value
-	 */
-	public void setValue(Float value) {
+	public void setBackgroundValue(Float value) {
 		this.backgroundValue = value;
 	}
 
@@ -244,113 +157,45 @@ public class OiBackgroundpropertyValue implements java.io.Serializable {
 		return this.codeValue;
 	}
 
-	/**
-	 * Sets the value.
-	 *
-	 * @param value the new value
-	 */
 	public void setCodeValue(String value) {
 		this.codeValue = value;
 	}
 
-	
-	
-	/**
-	 * Gets the valid from.
-	 *
-	 * @return the valid from
-	 */
 	@Column(name = "valid_from", length = 29)
 	public LocalDateTime getValidFrom() {
 		return this.validFrom;
 	}
 
-	/**
-	 * Sets the valid from.
-	 *
-	 * @param validFrom the new valid from
-	 */
 	public void setValidFrom(LocalDateTime validFrom) {
 		this.validFrom = validFrom;
 	}
 
-	
-	/**
-	 * Gets the valid to.
-	 *
-	 * @return the valid to
-	 */
 	@Column(name = "valid_to", length = 29)
 	public LocalDateTime getValidTo() {
 		return this.validTo;
 	}
 
-	/**
-	 * Sets the valid to.
-	 *
-	 * @param validTo the new valid to
-	 */
 	public void setValidTo(LocalDateTime validTo) {
 		this.validTo = validTo;
 	}
 
-	
-	/**
-	 * Gets the time created.
-	 *
-	 * @return the time created
-	 */
 	@Column(name = "time_created", length = 29)
 	public LocalDateTime getTimeCreated() {
 		return this.timeCreated;
 	}
 
-	/**
-	 * Sets the time created.
-	 *
-	 * @param timeCreated the new time created
-	 */
 	public void setTimeCreated(LocalDateTime timeCreated) {
 		this.timeCreated = timeCreated;
 	}
 
-	
-	/**
-	 * Gets the time deleted.
-	 *
-	 * @return the time deleted
-	 */
 	@Column(name = "time_deleted", length = 29)
 	public LocalDateTime getTimeDeleted() {
 		return this.timeDeleted;
 	}
 
-	/**
-	 * Sets the time deleted.
-	 *
-	 * @param timeDeleted the new time deleted
-	 */
 	public void setTimeDeleted(LocalDateTime timeDeleted) {
 		this.timeDeleted = timeDeleted;
 	}
 
-//	/**
-//	 * Gets the title.
-//	 *
-//	 * @return the title
-//	 */
-//	@Column(name = "title")
-//	public String getTitle() {
-//		return this.title;
-//	}
-//
-//	/**
-//	 * Sets the title.
-//	 *
-//	 * @param title the new title
-//	 */
-//	public void setTitle(String title) {
-//		this.title = title;
-//	}
 
 }

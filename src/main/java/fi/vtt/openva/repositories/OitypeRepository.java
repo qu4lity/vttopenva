@@ -30,11 +30,9 @@ package fi.vtt.openva.repositories;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.vtt.openva.domain.Oitype;
-import fi.vtt.openva.domain.OitypeProperty;
 
 /**
  * OitypeRepository

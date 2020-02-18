@@ -34,19 +34,30 @@
 	'use strict';
 
 	angular.module('app')
-	.controller('navigationController', ["$rootScope", "$http","$timeout", "$location","$cookies","configurationService","parameterService","visualizationService","$window", function ($rootScope, $http, $timeout,$location,$cookies,configurationService,parameterService,visualizationService,$window) {
-		var self = this;
+	.controller('navigationController', ["$scope","visualizationService","parameterService","configurationService","$window", function ($scope, visualizationService,parameterService,configurationService,$window) {
+//		var self = this;
+		$scope.initDone = false;
 
-
-		self.logout = function() {
+		this.logout = function() {
 			$window.location.href = '/logout'
 		}
 		
+		this.init = function(){
+			
+		}
 
-	    angular.element(document).ready(function () {
-	    	configurationService.addOpeningVisualizations();
+	    angular.element(document).ready(function () {	    
+	    	configurationService.updateStartEndTime().then(function(){
+	    		var conf = configurationService.getConfigurationInfo();
+	    		var startTime = moment(conf.endTime,"YYYY-MM-DD H:m:s").subtract(conf.initTimeRange,"seconds").format("YYYY-MM-DD HH:mm:ss")
+	    		startTime = conf.startTime;
+	    		
+	    		parameterService.setEndDateTime(conf.endTime);	    	
+		    	parameterService.setStartDateTime(startTime);
+		    	visualizationService.addOpeningVisualizations();
+		    	$scope.initDone = true;
+	    	});
 	    });
-	    $rootScope.authenticated = true;
 		
 	}]);
 	

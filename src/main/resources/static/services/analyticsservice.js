@@ -58,25 +58,33 @@ app.factory('analysisService',['$http','$window',function($http,$window){
 					}
 				}
 				
-				return $http({url:'query/' + analysisId +"/params" +paramString, method:"GET", timeout:10*60*1000})
+				return $http({url:'query/' + analysisId +"/params" +paramString, method:"GET", timeout:60*60*1000})
 				.then(function(response){ 
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
-						$window.alert('Command failed because of session timeout. Please login again.')
+						$window.alert('Command failed. Please login again.')
 						$window.location.href = '/logout'
 					} else {
 						return response.data;
 					}					 
 				},function(response){ 
 					if (response.status == -1) {
-						return ({error: "DeployR script: Timeout error."})
+						return ({error: "OpenVA script: Timeout error."})
 					} else {
-						connectionError();
+							$window.alert('Database query failed. If the problem recurs, please contact software administrator.');
 					}
 					
 				});
 				
 				
-			}
+			},
+			cancel : function(){
+				return $http({url:'query/cancelAnalysis', method:"GET"})
+					.then(function(response){ 
+				return response; 
+			},function(response){ 
+					connectionError();			
+			});			
+		}
 		}
 	}]);

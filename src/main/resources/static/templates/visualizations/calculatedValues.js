@@ -45,7 +45,6 @@ function trimForCalculatedValues(response, varId,oiids, startDate,endDate,title)
 	}
 	
 	var values = [];
-	var foo = 0;
 	values.push({"name":response.data[7].x_title,"value":response.data[1].calculated_value});
 
 	var data = new Object;

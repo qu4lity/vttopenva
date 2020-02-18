@@ -31,10 +31,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,9 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
-
-import fi.vtt.openva.OpenVAApp;
 
 public class Rrunnable implements Runnable {
 
@@ -56,9 +51,9 @@ public class Rrunnable implements Runnable {
 	String ouCommonFile;
 	String outputfile;
 	String rscriptExec;
-	
+
 	RrunnableListener listener;
-	
+
 	public Rrunnable(RrunnableListener listener, Map<String, String> queryMap, String rscript_, String rCommonFileName, String outRscript_, String outCommonFileName, String outputfile_, String rscriptExec_) {
 		this.listener = listener;
 		this.scriptParams = new HashMap<String,String>(queryMap);
@@ -69,10 +64,10 @@ public class Rrunnable implements Runnable {
 		this.outputfile = outputfile_;
 		this.rscriptExec = rscriptExec_;
 	}
-	
 
 
-	
+
+
 	@Override
 	public void run() {
 
@@ -81,36 +76,39 @@ public class Rrunnable implements Runnable {
 
 			Process pr = null;
 			Runtime rt = Runtime.getRuntime();
-				System.out.println(rscriptExec + " "+ outRscript); 
-				pr = rt.exec(rscriptExec + " " + outRscript); 
-				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+			pr = rt.exec(rscriptExec + " " + outRscript); 
+			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 
-				String line=null;
+			String line=null;
 
-				while((line=input.readLine()) != null) {
-					System.out.println(line);
-				}
+			while((line=input.readLine()) != null) {
+				System.out.println(line);
+			}
 
-				BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+			BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
 
-				while((line=error.readLine()) != null) {
-					System.out.println(line);
-				}
+			while((line=error.readLine()) != null) {
+				System.out.println(line);
+			}
 
-				pr.waitFor();
+			pr.waitFor();
+			this.listener.onFinished(outputfile);
+		} catch (Exception e) {
+			Path outpath = Paths.get(outputfile);
+			outpath.toAbsolutePath();
+			try {
+				String message = "{\"error\": \"OpenVA error : " + e.getMessage().replace("\"","\\\"") + "\" }";
+				Files.write(outpath, message.getBytes(StandardCharsets.UTF_8));
 				this.listener.onFinished(outputfile);
 			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		}
 	}
-	
+
 	private void updateR() throws IOException, URISyntaxException {
 		String content;			
 		content = extractContent(this.rscript);
@@ -119,7 +117,7 @@ public class Rrunnable implements Runnable {
 			content = content.replaceAll("<" + entry.getKey() +">", entry.getValue());
 		}
 		writeContent(content, this.outRscript);
-		
+
 		if (this.commonFile != null) {
 			content = extractContent(this.commonFile);
 			writeContent(content, this.ouCommonFile);
@@ -141,11 +139,12 @@ public class Rrunnable implements Runnable {
 		URL url = getClass().getResource(fileName); 
 		if (url != null) {
 			// filename refers to a file within a jar
+			//System.out.println("filename refers to a file within a jar" + " "+ fileName);
 			InputStream in = url.openStream(); 
 			content = IOUtils.toString(in, StandardCharsets.UTF_8);
 		} else {
 			// this is for testing in IDE
-			 content = new String(Files.readAllBytes( Paths.get(fileName)), StandardCharsets.UTF_8);	
+			content = new String(Files.readAllBytes( Paths.get(fileName)), StandardCharsets.UTF_8);	
 		}
 		return content;
 	}

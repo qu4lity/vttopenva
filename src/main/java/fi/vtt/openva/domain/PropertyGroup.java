@@ -70,6 +70,8 @@ public class PropertyGroup implements java.io.Serializable {
 	/** The time deleted. */
 	private LocalDateTime timeDeleted;
 	
+	private String groupType;
+	
 	/** The group members. */
 	private Set<GroupMember> groupMembers = new HashSet<GroupMember>(0);
 
@@ -229,6 +231,15 @@ public class PropertyGroup implements java.io.Serializable {
 		this.timeDeleted = timeDeleted;
 	}
 
+	@Column(name = "group_type")
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
+	
 	/**
 	 * Gets the group members.
 	 *
@@ -248,4 +259,6 @@ public class PropertyGroup implements java.io.Serializable {
 		this.groupMembers = groupMembers;
 	}
 
+	
+	
 }

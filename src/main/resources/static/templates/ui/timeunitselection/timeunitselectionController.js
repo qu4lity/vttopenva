@@ -53,11 +53,7 @@
 		}
 			   
 		var start = parameterService.getStartDateTime();
-		var end = parameterService.getEndDateTime();
-		
-		var startMoment = moment(start);
-		var endMoment = moment(end);
-		var diff = endMoment.diff(startMoment,'hours');
+		var end = parameterService.getEndDateTime();		
 		
 		$scope.changedValue = function() {
 			parameterService.setTimeUnit($scope.data.selected)

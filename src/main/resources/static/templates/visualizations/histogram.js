@@ -184,7 +184,6 @@ function d3HistogramChart(dataObject,id,tooltipFunction, onClickFunction) {
 	    .attr("transform","translate(" + xTrans +"," + yTrans +")")
 	    .style("font-size","12px")
 	    .call(d3.simpleLegend);
-	var node = d3.select("#" + id + "> div").node();
 		
 	return d3.select("#" + id + "> div").node();
 

@@ -43,8 +43,8 @@ function timeseriesChart(responsedata,window,id,visualizationMethod) {
 //			return TimeSeriesNQuantOnePlotPerOi(responsedata,id,false,onClickTimeSeries, tooltipTimeSeries);
 		case "TimeSeriesOneQuantOneLinePerOi":
 			return timeSeriesOneQuantOneLinePerOi(responsedata,id,false,onClickTimeSeries, tooltipTimeSeries);
-		case "TimeSeriesNominalBinary":
-			return timeSeriesNominalBinary(responsedata,id,false,onClickTimeSeries, tooltipTimeSeries);
+//		case "TimeSeriesNominalBinary":
+//			return timeSeriesNominalBinary(responsedata,id,false,onClickTimeSeries, tooltipTimeSeries);
 	default:
 		return visualizationMethod.toLowerCase();
 	}
@@ -78,7 +78,6 @@ function trimForimeSeriesOneQuantOnePlotPerOi(response) {
 }
 
 function makeTsDataObject(data) {
-	var limits = [];
 	var mainTitle;
 	var xTitle;
 	var yTitle;
@@ -136,13 +135,14 @@ function TimeSeriesNQuantOnePlotPerOi(response,id,points,onClickTimeSeries, tool
 	var svg = addSvgRoot(id,w,h);
 
 	var size = Object.keys(response).length;
-    var chartHeight = (h -(margin.top + margin.bottom))/(size-1);
+    var chartHeight = (h -(margin.top + margin.bottom))/(size-2);
     var top =0;
 	for (var  i=1; i< size; i++ ) {
 		var chartName = "chart_" + i;
+		if (response[chartName] == null) {
+			continue;
+		}
 	    var dataObject = trimForBasicTimeseries(response[chartName]);
-		var canvasSize = getCanvasSize();
-		var legendMargin = canvasSize.legendMargin;
 	    
 		var xTitle = dataObject.xTitle;
 		var yTitle = dataObject.yTitle;
@@ -259,7 +259,7 @@ function addSingleTimeSeries(svg,dataObject,w,h,margin,top,mainTitle,xTitle,yTit
 	    .attr("x", 9)
 	    .attr("dy", ".35em")
 	    .attr("transform", "rotate(90)")
-	    .style("text-anchor", "start");;
+	    .style("text-anchor", "start");
 	    
 	  g.append("g").call(d3.axisLeft(y));	  
 	  g.append("g").attr("class", "yAxis").attr("transform", "translate( " + graphWidth + ", 0 )").call(d3.axisRight(y).ticks(0))
@@ -292,11 +292,9 @@ function addSingleTimeSeries(svg,dataObject,w,h,margin,top,mainTitle,xTitle,yTit
 function addTimeseriesPath(g,x,y,data,color,legendText) {
 	var line = d3.line()
 	.x(function(d) {
-		var test = x(d.date);
 		return x(d.date); 
 		})
 	.y(function(d) { 
-		var test = y(d.value);
 		return y(d.value); 
 	});
 	
@@ -363,7 +361,7 @@ function addTimeseriesPoints(g,x,y,data) {
     g.call(tip);
 }
 
-function TimeSeriesOneQuantOnePlotPerOi(response,window,id,points,onClickTimeSeries, tooltipTimeSeries) {
+function TimeSeriesOneQuantOnePlotPerOi(response,window_,id,points,onClickTimeSeries, tooltipTimeSeries) {
 	var dataObjects = trimForimeSeriesOneQuantOnePlotPerOi(response);
 	var canvasSize = getCanvasSize();
 	
@@ -408,13 +406,11 @@ function timeSeriesNominalBinaryChart(dataObject,id,points, onClickTimeSeries, t
 	return node;
 }
 
-function timeSeriesOneQuantNOisChart(response,window,onClick, tooltip) {
+function timeSeriesOneQuantNOisChart(response,window_,onClick, tooltip) {
 	var dataObjects = trimForimeSeriesOneQuantOnePlotPerOi(response); // not tested!!!!!
 	var canvasSize = getCanvasSize();
 	
-	var margin = canvasSize.smallTopMargin;
 	var window = canvasSize.window;
-	var legendMargin = canvasSize.legendMargin;
 	
 	
     var w = window.width;    
@@ -472,7 +468,7 @@ function timeSeriesOneQuantOneLinePerOi(response,id,points, onClickTimeSeries, t
 		  } else {
 			  //console.log("#checkSmooths: OFF");
 			  hideAll(svgId, "ts-smooth-line");
-			  for (var  i=0; i< colors.length; i++ ) {
+			  for (i=0; i< colors.length; i++ ) {
 				  hideAll(svgId, "ts-smooth-line-"+colors[i]);
 			  }
 		  }

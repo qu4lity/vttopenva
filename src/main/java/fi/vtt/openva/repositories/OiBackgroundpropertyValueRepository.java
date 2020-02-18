@@ -29,12 +29,12 @@ package fi.vtt.openva.repositories;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.vtt.openva.domain.OiBackgroundpropertyValue;
+import fi.vtt.openva.domain.OitypeProperty;
 
 /**
  * OiBackgroundpropertyValueRepository
@@ -47,6 +47,10 @@ public interface OiBackgroundpropertyValueRepository extends CrudRepository<OiBa
 	@Query(nativeQuery = true, value="SELECT DISTINCT on (codevalue) * FROM oi_backgroundproperty_value WHERE oitype_property_title=?1")
 	List<OiBackgroundpropertyValue> findUniqueCodeValues(String typePropTitle);
 
-	@Query(nativeQuery = true, value="SELECT DISTINCT on (background_value) * FROM oi_backgroundproperty_value WHERE oitype_property_title=?1")
-	List<OiBackgroundpropertyValue> findUniqueBackgroundValues(String typePropTitle);
+	@Query(nativeQuery = true, value="SELECT DISTINCT on (background_value) * FROM oi_backgroundproperty_value WHERE oitype_property_id=?1")
+	List<OiBackgroundpropertyValue> findUniqueBackgroundValues(int id);
+	
+	List<OiBackgroundpropertyValue> findByOitypeProperty(OitypeProperty oitp);
+	List<OiBackgroundpropertyValue> findByOitypePropertyAndCodeValueIn(OitypeProperty oitp,List<String> values);
+	List<OiBackgroundpropertyValue> findByOitypePropertyAndBackgroundValueIn(OitypeProperty oitp,List<Float> values);
 }

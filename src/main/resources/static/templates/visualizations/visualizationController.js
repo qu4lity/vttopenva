@@ -35,13 +35,13 @@
 		function ($attrs,  $timeout , visualizationService) {		
 		$timeout((function() {
 			var id = $attrs.id;
-			visualizationService.run(id, svgVisualization);
+			visualizationService.run(id, interactiveVisualization);
 		}), 0);
 
 	}]);
 }());
 
-function svgVisualization(responsedata,window,id,visualizationMethod) {
+function interactiveVisualization(responsedata,window,id,visualizationMethod) {
 	switch(visualizationMethod) {
 		case "BoxPlot":
     	case "StatsBoxPlot":
@@ -56,7 +56,6 @@ function svgVisualization(responsedata,window,id,visualizationMethod) {
 		case "TimeSeriesOneQuantNOis":
 		case "TimeSeriesNQuantOnePlotPerOi":
 		case "TimeSeriesOneQuantOneLinePerOi":
-		case "TimeSeriesNominalBinary":
     		node = timeseriesChart(responsedata,window,id,visualizationMethod);
     		break;	
 		case "MultiOiContour":

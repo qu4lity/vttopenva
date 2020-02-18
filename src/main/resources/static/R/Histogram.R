@@ -35,6 +35,7 @@ source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -43,12 +44,22 @@ connectDB <- function()
 
 deploy_histogram=function(variableid, oitype,oiids=NULL, starttime=NULL, endtime=NULL,plot_time_unit,dbcon,imagetype)
 {  
+#	print(variableid)
+#	print(oitype)
+#	print(oiids)
+#	print(starttime)	
+#	print(endtime)		
+#	print(imagetype)	
+
+			
     on.exit(dbDisconnect(dbcon))
     my_meta=getMetadata(dbcon,variableid)
-    
-    print(paste(variableid,oiids,oitype,starttime,endtime,plot_time_unit))
+    #print(paste(variableid,oiids,oitype,starttime,endtime,plot_time_unit))
+    if (my_meta$plottype == "sum") {
+    	plot_time_unit = "sec"
+    }
     my_frame=getVariableValues_partition_aggregated_by_time(dbcon,variableid, oiids,oitype,starttime,endtime,fast=FALSE, plot_time_unit,row_limit=NULL) 
-print("getVariableValues_partition_aggregated_by_time OK")
+    #print("getVariableValues_partition_aggregated_by_time OK")
     n=nrow(my_frame)
 
     if(n==0) {
@@ -95,11 +106,13 @@ print("getVariableValues_partition_aggregated_by_time OK")
         } else {
             decimals=3
         } 
+#        print(head(plot_frame$measurement_value))
         mean=round(mean(plot_frame$measurement_value),decimals)
         sum=round(sum(plot_frame$measurement_value),decimals)
         std=round(sd(plot_frame$measurement_value),decimals)
         min=round(min(plot_frame$measurement_value),decimals)
         max=round(max(plot_frame$measurement_value),decimals)
+
         sub=paste("mean=", mean,"sum=",sum,"std=",std,"min=",min,"max=",max)
         main=paste(my_meta$report_title,"\n",ois_title,"\nn=",n,"\n",starttime,"-",endtime)
         return_list <- list(histData,main,xLabel,yLabel,sub,my_meta$lowerlimit,my_meta$upperlimit,mean,sum,std,min,max,my_meta$alarm_lowerlimit,my_meta$alarm_upperlimit,imagetype)
@@ -219,6 +232,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_histogram(varids,oitype, oiids,starttime,endtime,timeunit,dbcon,imagetype);
 						data["image"] = resultUrl
+						data["title"] = "Histogram"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					})
 		},
@@ -236,4 +252,4 @@ output_data <- tryCatch(
 			dev.off()
 		})
 print(output_data)
-	write(toJSON(output_data), file=outputfile)
+write(toJSON(output_data), file=outputfile)

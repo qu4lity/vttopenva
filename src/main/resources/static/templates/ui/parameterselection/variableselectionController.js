@@ -34,29 +34,26 @@
 	'use strict';
 
 	angular.module('app')
-	.controller('variableselectionController', ["$rootScope",'$scope',"metadataService","parameterService", function ($rootScope,$scope,metadataService,parameterService) {
+	.controller('variableselectionController', ['$scope',"metadataService","parameterService","configurationService", function ($scope,metadataService,parameterService,configurationService) {
 		$scope.data = {
 			oi:  [],
 			index: [],
 			calculated: [],			
 			measurement: [],
-			background: []
+			background: [],
+			groups : []
 		};
 		
 		
 
-		$rootScope.$watch('authenticated', function() {
-	        if ($rootScope.authenticated == true) {
-	    		metadataService.getObjectHierarchy().then(function(response) { 
-	    			var data = [];
-	    			$.each(response, function(i, item) {
-	    				data.push(addDataItem(item,0))
-	    			});
-	    			$scope.data.oi = data;
-	    			console.log(JSON.stringify($scope.data.oi));
-	    		});
-	        }
-	    });
+//	metadataService.getObjectHierarchy().then(function(response) { 
+//		var data = [];
+//		$.each(response, function(i, item) {
+//			data.push(addDataItem(item,0))
+//		});
+//		$scope.data.oi = data;
+//		console.log(JSON.stringify($scope.data.oi));
+//	});
 	    
 
 		
@@ -65,55 +62,118 @@
 			scope.remove();
 		};
 
+		
+		$scope.$watch(function () { 
+			return parameterService.getObjects();         
+		}, function (value) {
+			if (value == null || value.length == 0) {
+				return;
+			} else {
+				// this assumes that all the objects have same variables, should be modified if that is not the case
+				$scope.data.groups = []; 
+				var conf = configurationService.getConfigurationInfo();
+				metadataService.getVariableGroups().then(function(response) { 	
+					var groups = response;
+					var groupOrder = conf.variableGroups;
+					groups.sort(function(a,b) {
+						return groupOrder.indexOf(a.title) - groupOrder.indexOf(b.title);
+					})
+					
+					for (let i=0; i< groups.length; i++) {
+						if (groups[i].type!='ui') {
+							continue;
+						}
+						console.log(groups[i].report_title)
+						let group = {groupName: groups[i].reportTitle, groupTitle: groups[i].title, variables: null, groupText: {buttonDefaultText: groups[i].reportTitle}};
+						$scope.data.groups.push(group);
+						metadataService.getVariablesByGroup(conf.oiTypeId, groups[i].id).then(function(response) { 
+							var variables = [];
+							$.each(response, function(j, item) {
+								var dataItem = {"id": item.id, "title": item.text, "label": item.text,  "nodes": [], type: "m", timeUnit: item.timeunit} 
+								variables.push(dataItem);
+							});
+							variables.sort($scope.compare);	
+							group.variables = variables;
+							console.log($scope.data)
+						});				
+					}
+				});	
+			}
+		}, true);
 
 			
-		$rootScope.addVariables = function (node) {
-			metadataService.getVariablesByOiTypeTitle(node.type, "i").then(function(response) { 
-				var data = [];
-				$.each(response, function(i, item) {
-//					var dataItem = {"id": item.id, "title": item.text.substring(0, 32),  "nodes": [], nodeType: "var"} 
-					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
-					data.push(dataItem)
-				});
-				data.sort($scope.compare);				
-			    $scope.data.index = data;
-			});
-			metadataService.getVariablesByOiTypeTitle(node.type, "c").then(function(response) { 
-				var data = [];
-				$.each(response, function(i, item) {
-//					var dataItem = {"id": item.id, "title": item.text.substring(0, 32),  "nodes": [], nodeType: "var"} 
-					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
-					data.push(dataItem)
-				});
-				data.sort($scope.compare);				
-			    $scope.data.calculated = data;
-			});
-			metadataService.getVariablesByOiTypeTitle(node.type, "m").then(function(response) { 
-				var data = [];
-				$.each(response, function(i, item) {
-//					var dataItem = {"id": item.id, "title": item.text.substring(0, 32),  "nodes": [], nodeType: "var"} 
-					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
-					data.push(dataItem)
-				});
-				data.sort($scope.compare);				
-			    $scope.data.measurement = data;
-			});
-			metadataService.getVariablesByOiTypeTitle(node.type, "b").then(function(response) { 
-				var data = [];
-				$.each(response, function(i, item) {
-//					var dataItem = {"id": item.id, "title": item.text.substring(0, 32),  "nodes": [], nodeType: "var"} 
-					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
-					data.push(dataItem)
-				});
-				data.sort($scope.compare);
-			    $scope.data.background = data;
-			});
-		}
+//		$rootScope.addVariables = function (node) {
+//			metadataService.getVariablesByOiTypeTitle(node.type, "i").then(function(response) { 
+//				var data = [];
+//				$.each(response, function(i, item) {
+//					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
+//					data.push(dataItem)
+//				});
+//				data.sort($scope.compare);				
+//			    $scope.data.index = data;
+//			});
+//			metadataService.getVariablesByOiTypeTitle(node.type, "c").then(function(response) { 
+//				var data = [];
+//				$.each(response, function(i, item) {
+//					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
+//					data.push(dataItem)
+//				});
+//				data.sort($scope.compare);				
+//			    $scope.data.calculated = data;
+//			});
+//			metadataService.getVariablesByOiTypeTitle(node.type, "m").then(function(response) { 
+//				var data = [];
+//				$.each(response, function(i, item) {
+//					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
+//					data.push(dataItem)
+//				});
+//				data.sort($scope.compare);				
+//			    $scope.data.measurement = data;
+//			});
+//			metadataService.getVariablesByOiTypeTitle(node.type, "b").then(function(response) { 
+//				var data = [];
+//				$.each(response, function(i, item) {
+//					var dataItem = {"id": item.id, "title": item.text,  "nodes": [], nodeType: "var", timeUnit: item.timeunit} 
+//					data.push(dataItem)
+//				});
+//				data.sort($scope.compare);
+//			    $scope.data.background = data;
+//			});
+			
+			
+//			$scope.data.groups = []; 
+//			var conf = configurationService.getConfigurationInfo();
+//			metadataService.getVariableGroups().then(function(response) { 	
+//				var groups = response;
+//				var groupOrder = conf.variableGroups;
+//				groups.sort(function(a,b) {
+//					return groupOrder.indexOf(a.title) - groupOrder.indexOf(b.title);
+//				})
+//				
+//				for (let i=0; i< groups.length; i++) {
+//					console.log(groups[i].report_title)
+//					let group = {groupName: groups[i].reportTitle, groupTitle: groups[i].title, variables: null, groupText: {buttonDefaultText: groups[i].reportTitle}};
+//					$scope.data.groups.push(group);
+//					metadataService.getVariablesByGroup(conf.oiTypeId, groups[i].id).then(function(response) { 
+//						var variables = [];
+//						$.each(response, function(j, item) {
+//							var dataItem = {"id": item.id, "title": item.text, "label": item.text,  "nodes": [], type: "m", timeUnit: item.timeunit} 
+//							variables.push(dataItem);
+//						});
+//						variables.sort($scope.compare);	
+//						group.variables = variables;
+//						console.log($scope.data)
+//					});				
+//				}
+//			});	
+//		}
 		
 		$scope.selectVariable = function (selected) {
-			var node = selected.$modelValue;
+//			var node = selected.$modelValue;
+			var node = selected;
 			console.log("selected var" + node.id)
 			parameterService.addSelectedVar(node);
+			parameterService.addSelectedParameter(node); 
 		};
 		
 		$scope.compare = function(a,b) {

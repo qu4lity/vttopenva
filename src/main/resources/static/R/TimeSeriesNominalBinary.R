@@ -65,6 +65,7 @@ print(scriptPath)
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -107,7 +108,7 @@ deploy_timeseries_nominal_binary=function(variableids,oitype,oiids, starttime=NU
         #get data 
         variableid=variableids[i]
         plot_frame=getNomBinVariableValues_partition_aggregated_by_time(dbcon,variableid, oiids,oitype,starttime,endtime,fast=FALSE, plot_time_unit) 
-        #my_frame=getVariableValues_partition(dbcon,variableid=variableid,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,TRUE)
+        #my_frame=getVariableValues_partition(dbcon,variableid=variableid,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,FALSE)
         n_data_frame=nrow(plot_frame)
         n_total = n_total + n_data_frame;
         if (n_data_frame>0) {
@@ -156,7 +157,6 @@ deploy_timeseries_nominal_binary=function(variableids,oitype,oiids, starttime=NU
                 
                 mean <- as.character(mean(plot_frame$measurement_value))
                 alarm_level <- as.character(my_meta["alarm_level"])
-                print(my_meta["numunit"])
                 return_list <-list(values,timestamps,lowerlimit,upperlimit,alarm_lowerlimit,alarm_upperlimit,  outlier_lowerlimit,  outlier_upperlimit,  alarm_level, goalvalue,mean,referencevalue,main_title, plot_time_unit_title,"",imagetype)
                 names(return_list) <-c("values","timestamps","lowerlimit","upperlimit","alarm_lowerlimit","alarm_upperlimit","outlier_lowerlimit","outlier_upperlimit","alarm_level", "goalvalue","mean","referencevalue", "main_title","x_title", "y_title","imagetype")
                 return_return_list[[i]]<-return_list  
@@ -193,6 +193,7 @@ deploy_timeseries_nominal_binary=function(variableids,oitype,oiids, starttime=NU
             names(return_list) <-c("warning","n","raster")
             return(return_list)
     }else {
+    	return_return_list["imagetype"] = "interactive"
         return(return_return_list)
     }
 }
@@ -273,6 +274,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_timeseries_nominal_binary(varids,oitype, oiids, starttime, endtime,timeunit,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Binary timeseries"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

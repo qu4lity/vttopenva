@@ -63,6 +63,7 @@ print(scriptPath)
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -83,6 +84,7 @@ deploy_sum_value=function(variableid,oitype,oiids, starttime=NULL,endtime=NULL,d
     my_ois=getOIs(dbcon,oiids_temp) 
     oi_title=paste(my_ois[,c("report_title")],collapse = ',')
   
+  	print(my_meta)
     if (my_meta$plottype=='sum') {
         sum_vec <- NULL;
         for (i in 1:length(my_ois$title)) {
@@ -101,7 +103,8 @@ deploy_sum_value=function(variableid,oitype,oiids, starttime=NULL,endtime=NULL,d
             n = n + avg$count
         }
         result_value = mean(mean_vec)
-        #print(mean_vec$avg)
+        print(mean_vec)
+        print(n)
 #        result_value=mean(result_data$measurement_value,na.rm=TRUE)
         x_title ="Mean value"
         }   else {stop("OpenVA warning: not valid plottype")}
@@ -170,6 +173,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_sum_value(varids,oitype,oiids, starttime,endtime,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Single value indicator"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

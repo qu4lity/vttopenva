@@ -35,17 +35,26 @@ source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
 }
 
-visualize_ship_steaming_maneuvering=function(dbcon,oitype,starttime,endtime,imagetype)
+visualize_ship_steaming_maneuvering=function(oiids,dbcon,oitype,starttime,endtime,imagetype)
 {
     on.exit(dbDisconnect(dbcon))
+print("visualize_ship_steaming_maneuvering")    
+print(oiids)
 
 #get ship ids
-    ois=getOIs(dbcon,oiids=NULL,oitype="ship")
+	ois = NULL
+	if (is.null(oiids)) {
+		ois=getOIs(dbcon,oiids,oitype="ship")
+	} else {
+		oiids=paste("(",oiids,")",sep="")
+    	ois=getOIs(dbcon,oiids,oitype="ship")
+    }
     
 #result matrix
     sailing_matrix=matrix(nrow=2,ncol=nrow(ois)) 
@@ -63,9 +72,6 @@ visualize_ship_steaming_maneuvering=function(dbcon,oitype,starttime,endtime,imag
     }   
         
 
-#    if (sum( sailing_matrix)==0) {
-#        stop("OpenVA warning, no data for plot")
-#    }
 
 #plot
     main_title=paste("Ship steaming/maneuvering hours","\n",starttime,"-",endtime)
@@ -75,9 +81,6 @@ visualize_ship_steaming_maneuvering=function(dbcon,oitype,starttime,endtime,imag
   midpoint=barplot(sailing_matrix,main=main_title,ylab="h",beside=FALSE, col=c("blue","red"),
                    names.arg=bartitles)
   
-  bar_height=max(apply(sailing_matrix, 2, function(x) sum(x)))
-  legend(0,-round(bar_height/10,0),c("steaming","maneuvering"), fill=c("blue","red"), horiz=TRUE)
-  #legend("topleft", inset=.05,  c("steaming","maneuvering"), fill=c("blue","red"), horiz=FALSE)
   
   par(xpd=FALSE)
 
@@ -96,9 +99,13 @@ visualize_ship_steaming_maneuvering=function(dbcon,oitype,starttime,endtime,imag
    
  #add bar labels 
     text(midpoint, sailing_matrix["steam",]/2, 
-       paste(round(sailing_matrix["steam",],2),"/",pros1,"%"),col="white",cex=1.0)
+       paste(round(sailing_matrix["steam",],2),"/",pros1,"%"),col="white",cex=1.5)
     text(midpoint, sailing_matrix["steam",]+sailing_matrix["mane",]/2, 
-       paste(round(sailing_matrix["mane",],2),"/",pros2,"%"),col="white",cex=1.0)
+       paste(round(sailing_matrix["mane",],2),"/",pros2,"%"),col="white",cex=1.5)
+       
+    par(xpd=TRUE)
+    legend("bottomleft", inset=c(0,-0.13), c("maneuvering","steaming"), fill=c("blue","red"), horiz=FALSE)   
+       
     return(list(ois=ois,return_matrix=sailing_matrix,starttime=starttime,endtime=endtime,imagetype=imagetype))
 }
 
@@ -114,6 +121,9 @@ outputfile = "<outputfile>"
 localResultFile = "<localResultFile>"
 resultUrl = "<resultUrl>" 
 
+if (oiids=="null")  {
+	oiids=NULL;
+}
 
 if (starttime=="null")  {
 	starttime=NULL;
@@ -132,8 +142,11 @@ output_data <- tryCatch(
 							png(filename=localResultFile)
 						}
 						dbcon <- connectDB()
-						data <- visualize_ship_steaming_maneuvering(dbcon,oitype,starttime,endtime,imagetype)
+						data <- visualize_ship_steaming_maneuvering(oiids,dbcon,oitype,starttime,endtime,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Steaming/maneuvering"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

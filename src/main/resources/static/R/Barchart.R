@@ -34,6 +34,7 @@ print(scriptPath)
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -44,7 +45,7 @@ deploy_barplot=function(varids, oitype, oiids=NULL, starttime=NULL, endtime=NULL
     # get data
     oiids_temp=paste("(",oiids,")",sep="")
     my_meta=getMetadata(dbcon,varids)
-    my_frame=getVariableValues_partition(dbcon,variableid=varids,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,TRUE)
+    my_frame=getVariableValues_partition(dbcon,variableid=varids,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,FALSE)
     n=nrow(my_frame)
     if (n==0) stop(paste("OpenVA warning: No data found:", my_meta$report_title)) 
     # data found
@@ -97,7 +98,8 @@ deploy_barplot=function(varids, oitype, oiids=NULL, starttime=NULL, endtime=NULL
 plot_bars=function(variable,title,starttime,endtime)
 {
   my_table=table(variable)
-  barplot(my_table,main=title,col="blue")
+  x = barplot(my_table,main=title,col="blue")
+  text(x, 0, my_table,cex=1,pos=3,col="white") 
   return(as.list(my_table))
 }
 
@@ -137,6 +139,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_barplot(varids, oitype, oiids,starttime,endtime,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Bar chart"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)
