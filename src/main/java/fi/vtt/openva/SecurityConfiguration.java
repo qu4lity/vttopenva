@@ -33,12 +33,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -57,14 +56,15 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 @Configuration
 @EnableWebSecurity
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@Order(SecurityProperties.DEFAULT_FILTER_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	@Value("${server.servlet.session.timeout}")
+	private Integer timeout;
 	
     //@Override
-    protected void configure(HttpSecurity http) throws Exception {
-                
+    protected void configure(HttpSecurity http) throws Exception {                
           http
           	.authorizeRequests()
            		.antMatchers("/img/**").permitAll()
@@ -82,6 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
            	    @Override
            	    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
            	            Authentication authentication) throws IOException, ServletException {
+           					request.getSession().setMaxInactiveInterval(timeout);
            	        redirectStrategy.sendRedirect(request, response, "/");
            	    	}
            		})
@@ -93,8 +94,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
           		.permitAll();
         
          http.csrf().disable();  
-    }
 
+          http.headers()
+  			.frameOptions().sameOrigin()
+  			.httpStrictTransportSecurity().disable();
+    	}
     
     public static Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();

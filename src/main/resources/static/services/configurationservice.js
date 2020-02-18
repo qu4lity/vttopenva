@@ -27,15 +27,41 @@
 //
 // @author Pekka Siltanen
 
-app.factory('configurationService',['parameterService','visualizationService','$timeout', function(parameterService,visualizationService,$timeout){
+app.factory('configurationService',['parameterService','metadataService','$timeout', function(parameterService,metadataService,$timeout){
 
+	
+	
+
+	var applicationTitle = "Demo application";
+	var initTimeRange  = 21*24*60*60; //in seconds
+	var startTime;
+	var endTime;
+	
+	// run this to get time range for to data in the database
+	function updateStartEndTime() {
+
+		return  metadataService.getMaxMinDateTime(applicationTitle).then(function(minmax){
+				startTime = minmax.min;
+				endTime = minmax.max;		
+		});
+	}
+	
+	
 	function getConfigurationInfo() {
-		var conf = {
-						oiSelectionUi:"hierarchy",
-						applicationTitle: "Vessel",
-						oitype: "ship"
-					}
-		return conf;
+
+			var conf = {
+							oiSelectionUi:"hierarchy",
+							applicationTitle: applicationTitle,
+							oitype: "ship",
+							//oiTypeId: 2,
+							oiTypeId: 1,
+							initTimeRange:initTimeRange, 
+							specialVisualizations: ["SailingBar","AuxLoadAverageBar","FuelOilBar","DailyCount","CalculatedValuesTable","CalculatedValuesTableHours","CalculatedValuesTableAE","CalculatedValuesTableME","CalculatedValuesTableShip","TimeperiodHours"],
+							variableGroups : ['main_engine_ship_variables','aux_engine_variables','main_engine_ship_calculated','aux_engine_calculated','measurements'],
+							startTime : startTime,
+							endTime : endTime
+						}
+			return conf;
 	}
 	
 	function getTemplateName(visualizationMethod) {
@@ -53,30 +79,14 @@ app.factory('configurationService',['parameterService','visualizationService','$
 		}
 	}
 	
-	function addOpeningVisualizations() {
-		parameterService.setVisualizationMethod("SailingBar");
-		visualizationService.add("-opening-start1");
-		$timeout(function(){ 
-			parameterService.setVisualizationMethod("FuelOilBar");
-			visualizationService.add("-opening-start2");
-			$timeout(function(){ 
-				parameterService.setVisualizationMethod("AuxBar");
-				visualizationService.add("opening--start3");
-				$timeout( function(){ 
-					parameterService.clearVariables();
-					parameterService.clearObjects();
-				}, 2500);
-			}, 2500);
-		}, 2500);
-	}
+
 	
 	
 	
 	return {
-
+		updateStartEndTime: updateStartEndTime,
 		getConfigurationInfo:getConfigurationInfo,
-		getTemplateName: getTemplateName,
-		addOpeningVisualizations: addOpeningVisualizations
+		getTemplateName: getTemplateName
 	}
 }]);
 

@@ -32,7 +32,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.vtt.openva.domain.Visualization;
@@ -60,6 +59,11 @@ public interface VisualizationRepository extends CrudRepository<Visualization, I
 
 	@Query("SELECT x FROM Visualization x WHERE x.oismin <= :numOis AND (x.oismax IS NULL OR :numOis <= x.oismax) AND x.propertymin <= :numProp AND (x.propertymax IS NULL OR :numProp <= x.propertymax) ORDER BY x.title")
 	List<Visualization> findByOisLenAndPropertyLenByOrderByMethodAsc(@Param("numOis") int numOis, @Param("numProp") int numProp);
+
+	
+	@Query("SELECT x FROM Visualization x WHERE x.propertymin <= :numProp AND (x.propertymax IS NULL OR :numProp <= x.propertymax) ORDER BY x.title")
+	List<Visualization> findByPropertyMinByOrderByMethodAsc( @Param("numProp") int numProp);
+
 	/**
 	 * Find by method.
 	 *

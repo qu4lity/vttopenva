@@ -55,7 +55,17 @@
 
 <div class="row selectionComponent">
   <div class="col-sm-12">
-    <div class="treeTableTitle">Visualizations</div>
+    <div class="row">
+  		<div class="col-lg-7 padding-10">
+    		<div class="treeNodeTitle">Basic visualizations</div>
+    	</div>	
+    	<div class="col-lg-1 padding-10">
+    	</div>	
+    	<div class="col-lg-4 padding-10">
+    		<a class ='treeNodeTitle' ng-click="cancel()">Cancel</a>
+    		<a class ='treeNodeTitle btn btn-default btn-xs' ng-click="cancel()"><span class="glyphicon glyphicon-ban-circle" style="color:red"></span></a>
+    	</div>	
+    </div>
     <table ui-tree id="tree-root" class="table table-responsive bigTable">
       <tbody ui-tree-nodes ng-model="data.visualizations">
         <tr ng-repeat="node in data.visualizations" ui-tree-node class="tree-node-content angular-ui-tree-handle" ng-include="'trcontent2'" 

@@ -27,12 +27,13 @@
 
 # Author: Paula Järvinen, Pekka Siltanen
 
-library(RPostgreSQL)
+library(tools)
 args <- commandArgs(trailingOnly = F)
 scriptPath <- dirname(sub("--file=","",args[grep("--file",args)]))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -43,7 +44,9 @@ source(paste(scriptPath, "common.R", sep="/"))
 get_rawdata=function(variableid,oiids=NULL, starttime=NULL,endtime=NULL,dbcon,localResultFile,resultUrl) {  
     on.exit(dbDisconnect(dbcon))
     my_meta=getMetadata(dbcon,variableid)
-#    print(my_meta)
+    print(starttime)
+    print(endtime)
+    
     if (nrow(my_meta)==0) {
         stop("No variable found, try another")
     }
@@ -51,11 +54,15 @@ get_rawdata=function(variableid,oiids=NULL, starttime=NULL,endtime=NULL,dbcon,lo
     #read data    
     oiids_temp=paste("(",oiids,")",sep="")
 
-    my_frame=getVariableValues_partition(dbcon,variableid=variableid,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,TRUE)
+    my_frame=getVariableValues_partition(dbcon,variableid=variableid,oiids=oiids,oitype=oitype,starttime=starttime,endtime=endtime,FALSE)
     if (nrow(my_frame)==0) {
         stop("OpenVA warning: No data, try another time period")
     }
-    #print(head(my_frame))
+    
+    print("order")
+    my_frame[order(my_frame$measurement_time),]
+    
+    print(head(my_frame))
   
 
     fileName <- paste(my_meta$ title,".csv",sep="")
@@ -97,8 +104,14 @@ output_data <- tryCatch(
 		{			
 			suppressWarnings(
 					{
+						filePath = file_path_sans_ext(localResultFile)
+						localResultFile = paste(filePath, "csv", sep=".")
+						filePath = file_path_sans_ext(resultUrl)
+						resultUrl = paste(filePath, "csv", sep=".")
 						dbcon <- connectDB()
 						data <- get_rawdata(varids, oiids, starttime, endtime,dbcon,localResultFile,resultUrl)
+						data["title"] = "Raw data"
+    					data						
 					}
 			)	
 			

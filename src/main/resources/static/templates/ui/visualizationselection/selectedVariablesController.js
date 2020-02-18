@@ -29,16 +29,20 @@
 
 (function () {
 	'use strict';
-
-	var counter = 0;
 	
 	angular.module('app')
 	.controller('selectedVariablesController', ["$scope","$rootScope", "parameterService","metadataService","visualizationService","configurationService", function ($scope, $rootScope, parameterService,metadataService,visualizationService,configurationService) {
 		   $scope.data = {
-				    ois: [],
 				    vars: [],
 		   };
-		
+	
+	   $scope.removeVar = function(node) { 
+				var item = node.$modelValue;
+				var index = $scope.data.vars.indexOf(item);
+				$scope.data.vars.splice(index, 1);  
+				parameterService.removeSelectedParameter(item); 
+		}     
+		   
 
 		$scope.$watch(function () { 
 			return parameterService.getVariables();         
@@ -49,19 +53,26 @@
 				parameterService.clearVariables();
 				$scope.data.vars = [];
 				$rootScope.setVisualizations([]);
+				parameterService.setSpecialVisualizations([]);
 			} else {
 				var oisString = Array.prototype.map.call($scope.data.ois, function(item) { return item.id; }).join(",");
 				var varString = Array.prototype.map.call($scope.data.vars, function(item) { return item.id; }).join(",");
 				if (oisString.length > 0 && varString.length >0) {
 					metadataService.getVisualizationCandidates( oisString, varString, configurationService.getConfigurationInfo().applicationTitle).then(function(response) { 
-						var data = [];
+						var visualizations = [];
+						var specialVisualizations = [];
 						$.each(response, function(i, item) {
 							if (item.engine != "none") {
 								var dataItem = {"id": i, "title": item.title, "visid":item.method.toLowerCase(),"method":item.method,"nodes": []} 
-								data.push(dataItem)
+								if (configurationService.getConfigurationInfo().specialVisualizations.indexOf(dataItem.method) > -1) {
+									specialVisualizations.push(dataItem);
+								} else {
+									visualizations.push(dataItem);
+								}
 							}
 						});
-						$rootScope.setVisualizations(data);
+						$rootScope.setVisualizations(visualizations);
+						parameterService.setSpecialVisualizations(specialVisualizations);
 					});	
 				}
 			}

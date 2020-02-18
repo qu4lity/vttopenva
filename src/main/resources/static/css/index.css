@@ -504,4 +504,9 @@ table.updeepmain {
   left:0;
   right:0;
 }
+
+.padding-10 {
+   padding-right: 10px !important;
+   padding-left: 10px !important;
+}
       

@@ -28,16 +28,18 @@
 package fi.vtt.openva.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.vtt.openva.dao.PropertyEnum;
+import fi.vtt.openva.domain.Application;
 import fi.vtt.openva.domain.Codevalues;
 import fi.vtt.openva.domain.Objectofinterest;
 import fi.vtt.openva.domain.OiBackgroundpropertyValue;
 import fi.vtt.openva.domain.OiRelation;
 import fi.vtt.openva.domain.Oitype;
 import fi.vtt.openva.domain.OitypeProperty;
+import fi.vtt.openva.domain.PropertyGroup;
 import fi.vtt.openva.domain.Visualization;
 
 /**
@@ -47,126 +49,50 @@ import fi.vtt.openva.domain.Visualization;
  *
  */
 
-// TODO: Auto-generated Javadoc
-/**
- * The Interface RepositoryService.
- *
- * @author Markus Ylikerälä
- */
+
 @Transactional(readOnly = true, timeout=120)
 public interface RepositoryService {
+	Application getApplication(String title);
+	List<OiBackgroundpropertyValue> getBackgroundValuesByOiTypeProperty(OitypeProperty oitp);
+	
+	List<OiBackgroundpropertyValue> getBackgroundValuesByOiTypePropertyAndCodeValues(OitypeProperty oitp,
+			List<String> codevalues);
 
-	/**
-	 * Gets the oitype.
-	 *
-	 * @param string the title of the Oitype
-	 * @return the oitype
-	 */
+	List<OiBackgroundpropertyValue> getBackgroundValuesOiTypePropertyAndBackgroundValues(OitypeProperty oitp,
+			List<Float> values);
+	
+	List<Codevalues> getCodeValues(String codeTitle);
+	List<Codevalues> getCodeValuesByCodeValueAndCodesTitle(String codeValue, String codesTitle);
+	
 	Oitype getOitype(String string);
 	
-	/**
-	 * Gets the oitypes.
-	 *
-	 * @return the oitypes
-	 */
+	
 	List<Oitype> getOitypes();
-
-	/**
-	 * Gets the object of interests.
-	 *
-	 * @param oitype the oitype
-	 * @return the object of interests
-	 */
 	Objectofinterest[] getObjectOfInterests(Oitype oitype);
-
-	/**
-	 * Gets the object of interests.
-	 *
-	 * @param oitype the oitype
-	 * @return the object of interests
-	 */
-	Objectofinterest findById(Integer id);
-
-	/**
-	 * Gets the OI property types.
-	 *
-	 * @param oitypeId the oitype id
-	 * @param propertyEnum the property enum
-	 * @return the OI property types
-	 */
-	List<OitypeProperty> getOIPropertyTypes(int oitypeId, PropertyEnum propertyEnum);
-	 
- 	/**
- 	 * Gets the OI property types.
- 	 *
- 	 * @return the OI property types
- 	 */
+	Optional<Objectofinterest> findById(Integer id);
+	List<Objectofinterest> findAll();
+	List<OitypeProperty> getOIPropertyTypes(int oitypeId);
  	List<OitypeProperty> getOIPropertyTypes();
-	
-
-	/**
-	 * Gets the frequencies.
-	 *
-	 * @param varids the varids
-	 * @return the frequencies
-	 */
-	String getFrequencies(Integer varids);
-
-	/**
-	 * Gets the raw data.
-	 *
-	 * @param varids the varids
-	 * @param oiids the oiids
-	 * @param startdate the startdate
-	 * @param enddate the enddate
-	 * @return the raw data
-	 */
 	List<Object> getRawData(String varids, String oiids, String startdate, String enddate);
-
-	/**
-	 * Gets the visualizations.
-	 *
-	 * @param ois the ois
-	 * @param vars the vars
-	 * @return the visualizations
-	 */
 	List<Visualization> getVisualizations(Integer[] ois, Integer[] vars);
-
-	/**
-	 * Gets the visualization engine.
-	 *
-	 * @param method the method
-	 * @return the visualization engine
-	 * @throws Exception the exception
-	 */
 	String getVisualizationEngine(String method) throws Exception;
-	
-	
-	/**
-	 * Gets the first level relations.
-	 *
-	 * @return the first level relations
-	 */
 	List<OiRelation> getFirstLevelRelations();
-
-	/**
-	 * Find by parent id.
-	 *
-	 * @param id the id
-	 * @return the list
-	 */
 	List<OiRelation> findByParentId(int id);
-
-	List<Object> getMinAndMaxTimeMeasurements();
-
+	List<String> getMinAndMaxTimeMeasurements(String applicationTitle);
 	List<Object> getTop10();
 
-	List<Codevalues> getCodeValues(String codeTitle);
-
 	List<OiBackgroundpropertyValue> getUniqueCodeValues(String typePropTitle);
-
-	List<Codevalues> getCodeValuesByCodeValueAndCodesTitle(String codeValue, String codesTitle);
-
-	List<OiBackgroundpropertyValue> getUniqueBackgroundValues(String typePropTitle);
 	
+
+	List<OiBackgroundpropertyValue> getUniqueBackgroundValues(int i);
+	List<PropertyGroup> getPropertyGroups();	
+	List<OitypeProperty> getOIPropertyTypesByGroup(Integer groupId);
+	List<OitypeProperty> getFilteredCodedOiTypeProperties(List<String> titles);
+	List<OitypeProperty> getFilteredNonCodedOiTypeProperties(List<String> titles);
+
+
+	Optional<OitypeProperty> getOIPropertyTypeById(int id);
+
+	List<OitypeProperty> getOIPropertyTypesByTitle(String title);
+	List<Visualization> getVisualizations(Integer[] ois, Integer[] vars, String[] filters);
 }

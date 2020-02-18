@@ -37,12 +37,9 @@ function trimForScatterplot(response){
      
     var xCoords = [];
     var yCoords = [];
-    var meta = [];
-    var objectids = [];
-    var taskids = [];
     
     var dataMatrix = response.matrix;
-    for (i in dataMatrix) {
+    for (var i in dataMatrix) {
         if (dataMatrix[i].length == 2) {
             // data frame may have missing values!!!!
             xCoords.push(parseFloat(dataMatrix[i][0]));
@@ -101,7 +98,7 @@ function maxLimit(max,upperLimit, alarmUpperLimit) {
 }
 
 
-function scatterplotChart(responsedata,window,id) {
+function scatterplotChart(responsedata,window_,id) {
 	responsedata = trimForScatterplot(responsedata);
 	
 	var canvasSize = getCanvasSize();	
@@ -123,10 +120,8 @@ function scatterplotChart(responsedata,window,id) {
      
     var color = "black";
  
-    var innerPad = 5;
- 
     var data = []
-    for (i in xCoords) {
+    for (var i in xCoords) {
         data.push({x:parseFloat(xCoords[i]), y:parseFloat(yCoords[i])});                
     }
     
@@ -285,10 +280,9 @@ function scatterplotChart(responsedata,window,id) {
     })
  
     svg2.call(tip);
-    var tempt = d3.select("#" + id + "> div").node();
 	return d3.select("#" + id + "> div").node();
 	
-};
+}
 
 //function addXAxes(chart, xticks,xScale,h,margin) {
 //	chart.selectAll("empty")
@@ -376,7 +370,7 @@ function addClipPath(graph,w,h,xPadding,yPadding) {
 	.attr("stroke", "black")
 	.attr("stroke-width", 1)
 	.attr("pointer-events", "none")
-	.attr("transform", "translate(" + -xPadding +"," + -yPadding + ")");;  
+	.attr("transform", "translate(" + -xPadding +"," + -yPadding + ")");
 }
 
 

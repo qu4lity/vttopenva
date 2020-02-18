@@ -32,11 +32,12 @@ args <- commandArgs(trailingOnly = F)
 scriptPath <- dirname(sub("--file=","",args[grep("--file",args)]))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
 }
-
+options(warn = -1)
 source(paste(scriptPath, "common.R", sep="/"))
 
 # note this version of boxplot requires the oiids to be selected on same hierarchy level
@@ -46,7 +47,7 @@ source(paste(scriptPath, "common.R", sep="/"))
 deploy_boxplot=function(child_variableid, oitype,child_oiids,starttime,endtime,dbcon,imagetype)
 {  
     on.exit(dbDisconnect(dbcon))
-    my_frame= getVariableValues_partition(dbcon,variableid=child_variableid,oiids= child_oiids,oitype=oitype,starttime=starttime,endtime=endtime,TRUE)
+    my_frame= getVariableValues_partition(dbcon,variableid=child_variableid,oiids= child_oiids,oitype=oitype,starttime=starttime,endtime=endtime,FALSE)
 
     n=nrow(my_frame)
     my_meta=getMetadata(dbcon,child_variableid)
@@ -133,6 +134,9 @@ if (endtime=="null")  {
 	endtime=NULL;
 }
 
+lapply(dbListConnections(drv = dbDriver("PostgreSQL")), function(x) {dbDisconnect(conn = x)})
+
+
 output_data <- tryCatch(
 		{			
 			suppressWarnings(
@@ -145,6 +149,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_boxplot(varids,oitype, oiids,starttime,endtime,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Box plot"
+						data["width"] = 600
+    					data["height"] = 600
 						data
 					}
 			)	
@@ -159,5 +166,4 @@ output_data <- tryCatch(
 		finally={
 			dev.off()
 		})
-print(output_data)
 write(toJSON(output_data), file=outputfile)

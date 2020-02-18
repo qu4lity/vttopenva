@@ -34,11 +34,7 @@ function barChart(responsedata,window,id,visualizationMethod) {
 
 
 function trimBarChart(data) {
-	var limits = [];
 	var mainTitle;
-	var xTitle;
-	var yTitle;
-	var subTitle;
 	
 	if ("main_title" in data) {
 			mainTitle = data.main_title;
@@ -47,7 +43,7 @@ function trimBarChart(data) {
 	
 	var values = [];
 	var valuesN = Object.keys(data.values).length;
-	for (i = 0; i< valuesN; i++) {
+	for (var i = 0; i< valuesN; i++) {
 		var keyName = Object.keys(data.values)[i];
 		values.push({"name":keyName,"value":data.values[keyName]});
 	}
@@ -71,7 +67,6 @@ function d3BarChart(dataObject, id,tooltipFunction,onClickFunction) {
 	var xTitle = dataObject.xTitle;
 	var yTitle = dataObject.yTitle;
 	var subTitle = dataObject.subTitle;
-	var meanX = dataObject.meanX;
 
 	var x;
 	x = d3.scaleBand().rangeRound([0, w- (margin.left + margin.right)], 0.1);
@@ -118,7 +113,7 @@ function d3BarChart(dataObject, id,tooltipFunction,onClickFunction) {
 	if (Math.abs(max - min) < 10) {
 		var yAxis = d3.axisLeft(y).ticks(Math.abs(max - min) +1).tickFormat(d3.format("d"));
 	} else {
-		var yAxis = d3.axisLeft(y).ticks(10).tickFormat(d3.format("d"));
+		yAxis = d3.axisLeft(y).ticks(10).tickFormat(d3.format("d"));
 	}
 	
 	chart.append("g")
@@ -166,8 +161,6 @@ function d3BarChart(dataObject, id,tooltipFunction,onClickFunction) {
 //}    
 //
     
-    
-	var div = d3.select("#" + id + "> div");
 	return d3.select("#" + id + "> div").node();
 }
 

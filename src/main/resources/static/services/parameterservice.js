@@ -27,20 +27,30 @@
 //
 // @author Pekka Siltanen
 
-app.factory('parameterService',function(){
+app.factory('parameterService',['metadataService', function(metadataService){
 	
-		var selectedParameters = [];
-	
+		var selectedParameters = [];	
 		var selectedOis = [];
 		var selectedVars = [];
-//		var startDateTime = new Date().toISOString().replace("T"," ").substring(0,19);
-//		var endDateTime = new Date().toISOString().replace("T"," ").substring(0,19);
-		var startDateTime = "2017-04-14 09:31:52";
-		var endDateTime = "2017-05-29 08:13:31";
+		var visualizations = []; 
+		
+	
+		var startDateTime;
+		var endDateTime;
 		var timeUnit = "hour";
 		var imageType =["raster"];
 		var visualizationMethod;		
 		var visualizationTitle;		
+		
+		var selectedVisualization;
+		
+		function setSpecialVisualizations(viz) {
+			visualizations = viz;
+		}
+		function getSpecialVisualizations() {
+			return visualizations;
+		}
+		
 		
 		function addSelectedParameter(param) {
 			if (!containsParameter(param,selectedParameters)) {
@@ -231,6 +241,65 @@ app.factory('parameterService',function(){
 			visualizationTitle = title;
 		}
 		
+		function getSelectedImageType() {
+			return imageType ;
+		}
+		function setSelectedImageType(imagetype) {
+			imageType = imagetype;
+		}
+		
+		function setSelectedVisualization(viz) {
+			$timeout(function() {
+				selectedVisualization = viz;
+			}, 0, true);	
+		}
+		function getSelectedVisualization() {
+			return selectedVisualization ;
+		}
+		
+		function getAllSelected() {
+			var params = new Object();
+			
+			params.startTime = getStartDateTime();
+			params.endTime = getEndDateTime();			
+			params.timeUnit = getTimeUnit();
+			params.imagetype = getSelectedImageType();
+			
+			if (getSelectedVisualization() != null) {
+				var supportedImageFormats = getSelectedVisualization().formats;
+				// use default image format if selected format not supported for selected visualization
+				if (!supportedImageFormats.includes(params.imagetype)) {
+					params.imagetype = supportedImageFormats[0];
+				}
+			} 
+			
+			params.selectedObjects = [];
+			//var selectedObjects = getParametersByType("oi");
+			var selectedObjects = getObjects();
+			for (var i = 0; i<selectedObjects.length; i++ ){
+				params.selectedObjects.push(selectedObjects[i].id);
+			}
+			
+			
+			
+			params.selectedVariables = [];
+			var selectedVariables = getParametersByType("m");
+			for (i = 0; i<selectedVariables.length; i++ ){
+				params.selectedVariables.push(selectedVariables[i].id);
+			}
+			selectedVariables = getParametersByType("b");
+			for (i = 0; i<selectedVariables.length; i++ ){
+				params.selectedVariables.push(selectedVariables[i].id);
+			}
+			selectedVariables = getParametersByType("i");
+			for (i = 0; i<selectedVariables.length; i++ ){
+				params.selectedVariables.push(selectedVariables[i].id);
+			}
+				
+			return params;
+		}
+		
+		
 		return {
 			addSelectedParameter: addSelectedParameter,
 			removeSelectedParameter: removeSelectedParameter,
@@ -261,9 +330,13 @@ app.factory('parameterService',function(){
 			getVisualizationMethod: getVisualizationMethod,
 			setVisualizationMethod: setVisualizationMethod,
 			getVisualizationTitle: getVisualizationTitle,
-			setVisualizationTitle: setVisualizationTitle
+			setVisualizationTitle: setVisualizationTitle,
+			setSpecialVisualizations: setSpecialVisualizations,
+			getSpecialVisualizations: getSpecialVisualizations,
+			
+			getAllSelected: getAllSelected
 		}
-	});
+	}]);
 
 function containsObject(obj, list) {
     var i;

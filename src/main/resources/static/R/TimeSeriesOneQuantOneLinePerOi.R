@@ -65,6 +65,7 @@ print(scriptPath)
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -224,8 +225,8 @@ smooth_ts_many=function(plot_frame_all,meta,oi_titles,starttime,endtime,plot_tim
     }
     
     
-    
-    plot(my_time,y, type="b",
+
+    plot(my_time,y, type="l",
        col=line_colors[1],lwd=1, cex.main=0.9,cex.sub=0.8,cex.axis=0.9,
        main=paste(variable_title=meta$report_title,"\n",oi_titles,"\n n=",n_data_frame,"\n",starttime," - ",endtime),
        xlab=paste(plot_time_unit_title),
@@ -239,7 +240,8 @@ smooth_ts_many=function(plot_frame_all,meta,oi_titles,starttime,endtime,plot_tim
     smooth_list=replicate(length(ois), list()) 
     if (meta$quanttype=='desimal') {
         if (length(unique(y)) > 3)  {
-            if (n>10 && n< 10000) {
+            # check if all y are not equal: not need to smooth then (dpill seems to fail)	
+            if (n>10 && n< 10000 && length(unique(y)) >1) {
                 t=seq(1:n)
                 #print(t)
                 gridsize <-length(y)
@@ -269,17 +271,18 @@ smooth_ts_many=function(plot_frame_all,meta,oi_titles,starttime,endtime,plot_tim
                 #print(head(oi_plot_frame))
                 #print(n)
                 if (meta$quanttype=='integer') {y=round(y,0)}
-                lines(my_time,y,col=line_colors[i],type="b")
+                lines(my_time,y,col=line_colors[i],type="l")
                 
                 #smooth
                 if (meta$quanttype=='desimal') {
-                    if (n>10 && n< 10000) {
+           			# check if all y are not equal: not need to smooth then (dpill seems to fail)	
+            		if (n>10 && n< 10000 && length(unique(y)) >1) {
                         t=seq(1:n)
                         gridsize <-length(y)
                         bw <- dpill(t, y, gridsize=(gridsize))
                         lp <- locpoly(x=t, y=y, bandwidth=bw, gridsize=gridsize)                     
                         smooth <- lp$y
-                        smooth_list[[i]] <- as.list(smooth)
+                        smooth_list[[i]] <- as.list(smooth)                     
                         lines(my_time,smooth,type="l",col=line_colors[i],lwd=3)
                     }
                 }
@@ -367,6 +370,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_ts_quant_1var_1plotnline(varids,oitype,oiids, starttime,endtime,timeunit,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "One plot, multiple timeseries"	
+						data["width"] = 600
+    					data["height"] = 600											
 						data
 					}
 			)

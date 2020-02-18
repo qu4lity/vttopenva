@@ -35,9 +35,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.apache.log4j.Logger;
 
 /**
  *  OpenVAApp.
@@ -49,7 +47,6 @@ import org.apache.log4j.Logger;
 
 @EnableScheduling
 @EntityScan(basePackages = {"fi.vtt.openva.domain", "fi.vtt.openva.dao"})
-@EnableJpaRepositories(basePackages = "fi.vtt.openva.repositories")
 @ComponentScan("fi.vtt.openva.controller")
 @ComponentScan("fi.vtt.openva.service")
 @ComponentScan("fi.vtt.openva.task")
@@ -58,17 +55,14 @@ import org.apache.log4j.Logger;
 @ComponentScan("fi.vtt.openva.rinterface")
 public class OpenVAApp {
 
-    private static Logger log = Logger.getLogger(OpenVAApp.class);
-    public static String[] ARGS; 
     public static void main(String[] args) {
-    	
-    	ARGS = args;
-    	
+      	
         SpringApplication app = new SpringApplication(OpenVAApp.class);
         app.setRegisterShutdownHook(true);
         app.run(args);
         System.out.println("\n\n\n\n\n\n\nOpenVA application server has started.");
-    }
-    
 
+
+    }
+ 
 }

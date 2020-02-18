@@ -34,6 +34,7 @@ print(scriptPath)
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -97,6 +98,9 @@ output_data <- tryCatch(
 						data <- show_background_value(dbcon,varids,oiids)
 						data["image"] = resultUrl
 						data["imagetype"] = imagetype
+						data["title"] = "Background value"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

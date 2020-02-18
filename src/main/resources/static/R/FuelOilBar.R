@@ -35,18 +35,25 @@ source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
 }
 
-visualize_ship_fueloil_consumption=function(starttime=NULL,endtime=NULL,dbcon,imagetype)
+visualize_ship_fueloil_consumption=function(oiids,starttime=NULL,endtime=NULL,dbcon,imagetype)
 {
   on.exit(dbDisconnect(dbcon))
 
 #get ship ids
-  ois=getOIs(dbcon,oiids=NULL,oitype="ship")
- #print(ois)
+	ois = NULL
+	if (is.null(oiids)) {
+	print("getOIs")
+		ois=getOIs(dbcon,oiids,oitype="ship")
+	} else {
+		oiids=paste("(",oiids,")",sep="")
+    	ois=getOIs(dbcon,oiids,oitype="ship")
+    }
 
 #matrix for results
   consumptions_matrix=matrix(nrow=2,ncol=nrow(ois)) 
@@ -55,14 +62,16 @@ visualize_ship_fueloil_consumption=function(starttime=NULL,endtime=NULL,dbcon,im
   consumptions_matrix[]=0
   
 #get data for ships
+  sum_tot = 0;
     for (i in 1:nrow(ois)) {
         oiids=as.character(ois[i,"id"])
-        print(oiids)
         oi_title=as.character(ois[i,"title"])
         sum_distance = get_sum_partitioned(dbcon,oi_title,"ship_sailing_distance",starttime,endtime)
-        
         if (!is.na(sum_distance$sum) && sum_distance$sum>0) {
             sum_consumption = get_sum_partitioned(dbcon,oi_title,"fueloil_consumption_main_engine",starttime,endtime);
+            if (!is.na(sum_distance$sum)) {
+            	sum_tot = sum_tot + sum_distance$sum 
+			}
             consumption_per_distance = sum_consumption$sum/sum_distance$sum
 #get aux consumption 
             sum_aux_consumption = get_sum_partitioned(dbcon,oi_title,"fueloil_consumption_aux_engine",starttime,endtime);
@@ -70,23 +79,27 @@ visualize_ship_fueloil_consumption=function(starttime=NULL,endtime=NULL,dbcon,im
 
             consumptions_matrix[,i]=c(consumption_per_distance,consumption_aux_per_distance)
         }
-        print("next")
     }
     
-    if (sum(consumptions_matrix)==0) {
+
+    print("sum")
+#   if (sum(consumptions_matrix)==0) {
+	if (sum_tot==0) {
         stop("OpenVA warning, no data for plot")
     }
+    print(sum_tot)
 #plot
     main_title=paste("Fueloil consumption/nautical mile","\n",starttime,"-",endtime)
+    print("paste")
     bartitles=paste(colnames(consumptions_matrix), "\n",round(consumptions_matrix[1,]+consumptions_matrix[2,],2))
     par(xpd=TRUE) #for legend
-  
+      print("plot")
     midpoint=barplot(consumptions_matrix,main=main_title,ylab="kg/Nm",beside=FALSE, col=c("blue","red"),
                  names.arg=bartitles)
     bar_height=max(apply(consumptions_matrix, 2, function(x) sum(x)))
     legend(0,-round(bar_height/10,0),   c("main eng","aux eng"), fill=c("blue","red"), horiz=TRUE)
     par(xpd=FALSE)
- 
+       print("plotted")
   #calculate % for plot
     pros_me= round(consumptions_matrix["me",]/ (consumptions_matrix["me",]+ consumptions_matrix["aux",])*100,0)
     pros_aux= round( consumptions_matrix["aux",]/ (consumptions_matrix["me",]+ consumptions_matrix["aux",])*100,0)
@@ -98,11 +111,13 @@ visualize_ship_fueloil_consumption=function(starttime=NULL,endtime=NULL,dbcon,im
             {consumptions_matrix[i,j]=NA}
         }
     }   
+    
+           print("labels")
 #add bar labels
     text(midpoint, consumptions_matrix["me",]/2, 
-        paste(round(consumptions_matrix["me",],2),"/",pros_me,"%"),col="white",cex=1.0)
+        paste(round(consumptions_matrix["me",],2),"/",pros_me,"%"),col="white",cex=1.5)
     text(midpoint, consumptions_matrix["me",]+consumptions_matrix["aux",]/2, 
-      paste(round(consumptions_matrix["aux",],2),"/",pros_aux,"%"),col="white",cex=1.0)
+      paste(round(consumptions_matrix["aux",],2),"/",pros_aux,"%"),col="white",cex=1.5)
     return(list(ois=ois,return_matrix=consumptions_matrix,starttime=starttime,endtime=endtime,imagetype=imagetype))
     
 }
@@ -117,6 +132,10 @@ timeunit = "<timeunit>"
 outputfile = "<outputfile>"
 localResultFile = "<localResultFile>"
 resultUrl = "<resultUrl>"
+
+if (oiids=="null")  {
+	oiids=NULL;
+}
 
 if (starttime=="null")  {
 	starttime=NULL;
@@ -136,11 +155,14 @@ output_data <- tryCatch(
 						}
 						dbcon <- connectDB()
 						start.time <- Sys.time()
-						data <- visualize_ship_fueloil_consumption(starttime,endtime,dbcon,imagetype)
+						data <- visualize_ship_fueloil_consumption(oiids,starttime,endtime,dbcon,imagetype)
 						end.time <- Sys.time()
 						time.taken <- end.time - start.time
 						data["time"] = time.taken
 						data["image"] = resultUrl
+						data["title"] = "Fuel oil consumption/NM"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

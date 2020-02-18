@@ -62,7 +62,7 @@ function trimBoxplot(data){
 
 	
 	var values = [];
-	for (i= 0; i<nPlots;i++) {
+	for (var i= 0; i<nPlots;i++) {
 		values.push({"name":plotNames[i],"lower_whisker":lw[i],"lower_hinge":lh[i],"upper_hinge":uh[i],"upper_whisker":uw[i],"median":med[i]}); 
 	}
 	
@@ -74,7 +74,7 @@ function trimBoxplot(data){
 	dataObject["outliers"]= null;
 	if (groupArray != null && outlierArray!= null && groupArray != "NULL" && outlierArray!= "NULL") {
 		var outliers = [];
-		for (j = 0; j < nPlots; j++) {
+		for (var j = 0; j < nPlots; j++) {
 			for (i= 0; i<groupArray.length;i++) {
 				if (groupArray[i] == j+1) {
 					outliers.push({"name":plotNames[j],"value":outlierArray[i]}); 
@@ -100,7 +100,7 @@ function tooltipBoxPlot(dataObject,i) {
 	"<br/> Lower hinge: " + dataObject.values[i].lower_hinge + " Upper hinge: " + dataObject.values[i].upper_hinge + "</span>";
 }
 
-function d3BoxPlot(response, trimBoxplot, window,id,onClickFunction , tooltipFunction) {
+function d3BoxPlot(response, trimBoxplot, window_,id,onClickFunction , tooltipFunction) {
 	
 	if ("error" in response) {
 		console.log(response);
@@ -108,19 +108,18 @@ function d3BoxPlot(response, trimBoxplot, window,id,onClickFunction , tooltipFun
 	}
 	
 	if ("error" in response) {
-		console.log(dataObject.error);
+		console.log(response.error);
 		return;
 	}
 	var canvasSize = getCanvasSize();
 	
 	var margin = canvasSize.margin;
 	var window = canvasSize.window;
-	var legendMargin = canvasSize.legendMargin;
     var w = window.width;
     var h = window.height;
     
     
-	dataObject = trimBoxplot(response);
+	var dataObject = trimBoxplot(response);
 	var data = dataObject.values;
 	var outliers = dataObject.outliers;
 	var title = dataObject.title;
@@ -241,12 +240,12 @@ function d3BoxPlot(response, trimBoxplot, window,id,onClickFunction , tooltipFun
 		
 		xup.selectAll("text").remove();
 		
-		var scale = y.domain();
-		var scalez = xAxis.tickSize();
-		var minX = x.domain()[0];
-		var minY = y.domain()[0];
-		var maxX = x.domain()[1];
-		var maxY = y.domain()[1];			
+//		var scale = y.domain();
+//		var scalez = xAxis.tickSize();
+//		var minX = x.domain()[0];
+//		var minY = y.domain()[0];
+//		var maxX = x.domain()[1];
+//		var maxY = y.domain()[1];			
 
 		addYAxisTitle(chart, w, h, margin, yTitle); 
 		return d3.select("#" + id + "> div").node();

@@ -30,14 +30,15 @@
 
 args <- commandArgs(trailingOnly = F)
 scriptPath <- dirname(sub("--file=","",args[grep("--file",args)]))
-print(scriptPath)
-connectDB <- function()
-{
+
+
+connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
 }
-
+options(warn = -1)
 source(paste(scriptPath, "common.R", sep="/")) 
 
 deploy_contourplot=function(varids,oitype,oiids=NULL, starttime=NULL,endtime=NULL,dbcon ,imagetype) {  
@@ -176,6 +177,8 @@ if (endtime=="null")  {
 	endtime=NULL;
 }
 
+lapply(dbListConnections(drv = dbDriver("PostgreSQL")), function(x) {dbDisconnect(conn = x)})
+
 output_data <- tryCatch(
 		{			
 			suppressWarnings(
@@ -187,7 +190,10 @@ output_data <- tryCatch(
 						}
 						dbcon <- connectDB()
 						data <- deploy_contourplot(varids, oitype, oiids,  starttime, endtime,dbcon,imagetype)
+						data["title"] = "Contour"
 						data["image"] = resultUrl
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)	

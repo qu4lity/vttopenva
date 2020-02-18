@@ -34,6 +34,7 @@ print(scriptPath)
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -59,7 +60,13 @@ deploy_cormat=function(variable_ids,oi_ids,starttime,endtime,dbcon,imagetype)
     my_meta=getMetadata(dbcon,varids_temp[i])
   
     my_metadata[i,"id"]=my_meta$id
-    my_metadata[i,"title"]=my_meta$report_title
+    if (nchar(my_meta$report_title)< 17) {
+	   my_metadata[i,"title"]=my_meta$report_title
+    } else if (nchar(my_meta$report_title)< 34) {
+	   my_metadata[i,"title"] = paste(substr(my_meta$report_title, 1, 15), "\n", substr(my_meta$report_title, 16, nchar(my_meta$report_title)), sep = "")
+    } else {
+	  my_metadata[i,"title"] = paste(substr(my_meta$report_title, 1, 15), "\n", substr(my_meta$report_title, 16, 30) , "\n", substr(my_meta$report_title, 31, nchar(my_meta$report_title)), sep = "")
+    }
     my_metadata[i,"variabletype"]=my_meta$variabletype
     my_metadata[i,"oitype"]=my_meta$oitype_title
     my_metadata[i,"time_unit"]=my_meta$time_unit
@@ -74,7 +81,7 @@ deploy_cormat=function(variable_ids,oi_ids,starttime,endtime,dbcon,imagetype)
         my_variable_id=varids_temp[[1]]
 
         #read first variable data
-        my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,TRUE)
+        my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,FALSE)
         #print(my_var_values)
         #print (nrow(my_var_values))
         #data found
@@ -100,7 +107,7 @@ deploy_cormat=function(variable_ids,oi_ids,starttime,endtime,dbcon,imagetype)
         for (i in 2:length(varids_temp))
         {      
             my_variable_id=varids_temp[[i]]
-            my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,TRUE)
+            my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,FALSE)
             if(nrow(my_var_values)==0) {
                 stop(paste(",OpenVA warning: No data found ",ois_title,my_metadata[i,"title"]) )
             }
@@ -131,7 +138,7 @@ deploy_cormat=function(variable_ids,oi_ids,starttime,endtime,dbcon,imagetype)
         #mixed, join by oi_title
 
         my_variable_id = varids_temp[[1]]
-        my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,TRUE)
+        my_var_values= getVariableValues_partition(dbcon,my_variable_id, oiids,oitype=oitype,starttime,endtime,FALSE)
         if(nrow(my_var_values)==0) {
             stop(paste("OpenVA warning: No data found ",ois_title,my_metadata[i,"title"]) )
         }
@@ -149,7 +156,7 @@ deploy_cormat=function(variable_ids,oi_ids,starttime,endtime,dbcon,imagetype)
         {   
             #print(i)
             my_variable_id = as.integer(varids_temp[[i]])
-            my_var_values= getVariableValues_partition(dbcon,my_variable_id,oitype=oitype, oiids,starttime,endtime,TRUE)
+            my_var_values= getVariableValues_partition(dbcon,my_variable_id,oitype=oitype, oiids,starttime,endtime,FALSE)
             if(nrow(my_var_values)==0) {
                 stop(paste("OpenVA warning: No data found ",ois_title,my_metadata[i,"title"]) )
             }
@@ -262,11 +269,14 @@ output_data <- tryCatch(
 					  	if (imagetype == "vector") {
     						svglite(localResultFile)
   						} else {
-							png(filename=localResultFile)
+							png(filename=localResultFile,width=600,height=600)
 						}
 						dbcon <- connectDB()
 						data <- deploy_cormat(varids,oiids,starttime,endtime,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Correlation matrix"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 				)	

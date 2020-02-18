@@ -94,8 +94,9 @@ app.config([
 					templateUrl: './templates/ui/visualizationselection/visualizations.html',
 					controller: 'visualizationsController'
 				},
-				'visualization@home': {
-					templateUrl: "./templates/visualisation.html"
+				'specialVisualizations@home': {
+					templateUrl: './templates/ui/visualizationselection/specialVisualizations.html',
+					controller: 'specialVisualizationsController'
 				},
 				'visualization@home': {
 					templateUrl: "./templates/visualizations/visualization.html"

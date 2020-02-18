@@ -31,6 +31,8 @@
 	'use strict';
 
 	var counter = 0;
+	var oldValues = [];
+	
 	
 	angular.module('app')
 	.controller('selectedObjectsController', ["$scope","$rootScope", "parameterService","metadataService","visualizationService","configurationService", function ($scope, $rootScope,	parameterService,metadataService,visualizationService,configurationService) {
@@ -39,6 +41,16 @@
 		   };
 		
 		
+		$scope.removeOI = function(node) { 
+				var item = node.$modelValue;
+				var index = $scope.data.ois.indexOf(item);
+				$scope.data.ois.splice(index, 1);  
+				parameterService.removeSelectedParameter(item); 
+				if ($scope.data.ois.length == 0) {
+					parameterService.clearParameters("m");
+				}
+		}    
+		   
 		$scope.$watch(function () { 
 				return parameterService.getObjects();         
 			}, function (value) {
@@ -53,14 +65,21 @@
 					var varString = Array.prototype.map.call($scope.data.vars, function(item) { return item.id; }).join(",");
 					if (oisString.length > 0 && varString.length >0) {
 						metadataService.getVisualizationCandidates( oisString, varString, configurationService.getConfigurationInfo().applicationTitle).then(function(response) { 
-							var data = [];
+							var visualizations = [];
+							var specialVisualizations = [];
 							$.each(response, function(i, item) {
 								if (item.engine != "none") {
 									var dataItem = {"id": i, "title": item.title,  "visid":item.method.toLowerCase(),"method":item.method,"nodes": []} 
-									data.push(dataItem)
+									if (configurationService.getConfigurationInfo().specialVisualizations.indexOf(dataItem.method) > -1) {
+										specialVisualizations.push(dataItem);
+									} else {
+										visualizations.push(dataItem);
+									}
 								}
 							});
-							$rootScope.setVisualizations(data);
+							$scope.data.visualizations = visualizations;
+							$rootScope.setVisualizations(visualizations);
+							parameterService.setSpecialVisualizations(specialVisualizations);
 						});	
 					}
 				}
@@ -74,19 +93,33 @@
 				parameterService.clearVariables();
 				$scope.data.vars = [];
 				$scope.data.visualizations = [];
+				oldValues = [];
 			} else {
+				// no need to update UI if nothing has changed
+				if (oldValues.length == $scope.data.vars.length) {
+					return;
+				}
+				oldValues = $scope.data.vars;
 				var oisString = Array.prototype.map.call($scope.data.ois, function(item) { return item.id; }).join(",");
 				var varString = Array.prototype.map.call($scope.data.vars, function(item) { return item.id; }).join(",");
 				if (oisString.length > 0 && varString.length >0) {
 					metadataService.getVisualizationCandidates( oisString, varString, configurationService.getConfigurationInfo().applicationTitle).then(function(response) { 
-						var data = [];
+						var visualizations = [];
+						var specialVisualizations = [];
 						$.each(response, function(i, item) {
 							if (item.engine != "none") {
 								var dataItem = {"id": i, "title": item.title, "visid":item.method.toLowerCase(),"method":item.method,"nodes": []} 
-								data.push(dataItem)
+								if (configurationService.getConfigurationInfo().specialVisualizations.indexOf(dataItem.method) > -1) {
+									specialVisualizations.push(dataItem);
+								} else {
+									visualizations.push(dataItem);
+								}
+								
 							}
 						});
-						$scope.data.visualizations = data;
+						$scope.data.visualizations = visualizations;
+						$rootScope.setVisualizations(visualizations);
+						parameterService.setSpecialVisualizations(specialVisualizations);
 					});	
 				}
 			}

@@ -27,9 +27,9 @@
 
 package fi.vtt.openva.repositories;
 
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
-
 import fi.vtt.openva.domain.PropertyGroup;
 
 /**
@@ -40,5 +40,5 @@ import fi.vtt.openva.domain.PropertyGroup;
  */
 @Transactional(readOnly = true, timeout=30)
 public interface PropertyGroupRepository extends CrudRepository<PropertyGroup, Integer> {
-	
+	List<PropertyGroup> findAll();
 }

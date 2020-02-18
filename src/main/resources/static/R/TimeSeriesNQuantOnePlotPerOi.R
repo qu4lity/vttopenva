@@ -63,6 +63,7 @@ scriptPath <- dirname(sub("--file=","",args[grep("--file",args)]))
 source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function() {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -236,7 +237,7 @@ smooth_ts=function(plot_frame,n_data_frame,meta,oi_titles,starttime,endtime,plot
         }
     if (n>1) { 
     
-        plot(my_time,y, type="b",cex.main=0.9,cex.sub=0.8,cex.axis=0.9,
+        plot(my_time,y, type="l",cex.main=0.9,cex.sub=0.8,cex.axis=0.9,
             col="black",lwd=1, main=paste(meta$report_title, 
                                        "\n",oi_titles,"\n",
                                        "n=",n_data_frame,"\n",starttime," - ",endtime),
@@ -359,7 +360,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_ts_quant_nvar_nplot1line(varids,oitype,oiids, starttime,endtime,timeunit,dbcon,imagetype)
 						data["image"] = resultUrl
-						print(data["imagetype"])
+						data["title"] = "Multiple variable timeseries"
+						data["width"] = 600
+    					data["height"] = 600						
 						if (data["imagetype"] != "raster" && data["imagetype"] != "vector") {
 							data["imagetype"] = "multi_interactive"
 						}	

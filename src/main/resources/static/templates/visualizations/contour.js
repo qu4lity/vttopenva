@@ -69,7 +69,6 @@ function trimForContourplot(response){
 		});
 	});
 	
-//	min = min - (max-min)/9;
 	
 	hourData.forEach(function(sub,i,hourData) {
 		sub.forEach(function(d,i,hourData) {
@@ -81,24 +80,8 @@ function trimForContourplot(response){
 		});
 	});
 	
-//	var test = new Array(dataObject.hours.length);
-//	
-//	var k = 0;
-//	for (var i=0; i<dataObject.hours.length; ++i) {
-//		 var tmp = new Array(dataObject.days.length);
-//		  for (var j=0; j<dataObject.days.length; ++j) {
-//		    tmp[j] = hourData[k];
-//		    k++;
-//		  }
-//		  test[dataObject.hours.length - 1 - i] = tmp;
-//		}
 	
 	var hourvals = [];
-//	for (var i=0; i<dataObject.hours.length; i++) {
-//		  for (var j=0; j<dataObject.days.length; j++) {
-//			  hourvals.push(hourData[j + (dataObject.hours.length - i-1)*dataObject.days.length]);
-//		  }
-//	}
 	hourData.forEach(function(sub) {
 		sub.forEach(function(d) {
 			hourvals.push(d);
@@ -108,21 +91,21 @@ function trimForContourplot(response){
 	return dataObject;
 }
 
-function ownScale (xScale,yScale) {
-    return d3.geoTransform({
-        point: function(x, y) {
-        	this.stream.point( x*xScale, y*yScale);
-        }
-    });
-    }
+//function ownScale (xScale,yScale) {
+//    return d3.geoTransform({
+//        point: function(x, y) {
+//        	this.stream.point( x*xScale, y*yScale);
+//        }
+//    });
+//    }
+//
+//var ownScale = d3.geoTransform({
+//	  point: function(x, y) {
+//	    this.stream.point(x, -y);
+//	  }
+//	});
 
-var ownScale = d3.geoTransform({
-	  point: function(x, y) {
-	    this.stream.point(x, -y);
-	  }
-	});
-
-function d3Contourplot(dataObject, trimForContourplot, window,id,onClickFunction, tooltipFunction){
+function d3Contourplot(dataObject, trimForContourplot, window_,id,onClickFunction, tooltipFunction){
 	
 //	try{
 		var canvasSize = getCanvasSize();
@@ -132,15 +115,10 @@ function d3Contourplot(dataObject, trimForContourplot, window,id,onClickFunction
 	    var w = window.width;
 	    var h = window.height;
 		var legendMargin = canvasSize.legendMargin;
-	    	    
-		var xTitle = dataObject.x_title;
-		var yTitle = dataObject.y_title;		
-		var mainTitle = dataObject.main_title;
 
 		var rightMargin = canvasSize.legendMargin.right + 10;
 
 		var parseDate = d3.timeParse("%Y-%m-%d");
-		var parseDateTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 		
 		
 		var xAxisData = dataObject.days;
@@ -154,11 +132,7 @@ function d3Contourplot(dataObject, trimForContourplot, window,id,onClickFunction
 		x.domain(d3.extent(xAxisData, function(d) { return d; }));
 		
 		var y = d3.scaleLinear().range([h -(margin.top+ margin.bottom), 0]);
-		var ymin = d3.min(dataObject.hours, function(d) { return  d; });
-		var ymax = d3.max(dataObject.hours, function(d) { return  d; });
-		y.domain([d3.min(dataObject.hours, function(d) { return parseFloat(d); }), d3.max(dataObject.hours, function(d) { return  parseFloat(d); })]);
-		
-		
+		y.domain([d3.min(dataObject.hours, function(d) { return parseFloat(d); }), d3.max(dataObject.hours, function(d) { return  parseFloat(d); })]);		
 		
 		var svg = addSvgRoot(id,w,h);		
 
@@ -183,10 +157,7 @@ function d3Contourplot(dataObject, trimForContourplot, window,id,onClickFunction
 		  g.append("g").call(d3.axisLeft(y));
 		  
 		  var levels = 8;
-		  
-		  var max = d3.max(dataObject.hourData, function(d) { return parseFloat(d); });  	
-		  var min = d3.min(dataObject.hourData, function(d) { return parseFloat(d); });  
-		  
+		  var max = d3.max(dataObject.hourData, function(d) { return parseFloat(d); });  
 		  var colorScale = d3.scaleQuantize()
 	        			      .domain([0 , max])
 	        			      .range(blueScale8);

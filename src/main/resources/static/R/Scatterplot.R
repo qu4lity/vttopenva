@@ -35,6 +35,7 @@ source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -173,7 +174,7 @@ deploy_scatplot_fast=function(varids,oitype,oiids,starttime=NULL,endtime=NULL,ti
       abline(h=my_meta2$alarm_upperlimit,col="red",lwd=2)
       abline(h=my_meta2$lowerlimit,col="black",lwd=1)
       abline(h=my_meta2$upperlimit,col="black",lwd=1)
-    abline(lm(plot_frame$measurement_value2~plot_frame$measurement_value1), col="blue") # ei toimi jos dataa liian v‰h‰n, pit‰‰ laittaa joku tsekki
+    abline(lm(plot_frame$measurement_value2~plot_frame$measurement_value1), col="blue") # may not work if not much data, need to make some kind of check
 
     if (imagetype == "raster") {
         return_list <- list("No data returned for raster",imagetype)
@@ -208,8 +209,8 @@ deploy_scatplot_fast=function(varids,oitype,oiids,starttime=NULL,endtime=NULL,ti
     		rownames(return_matrix) <- NULL
     		return_matrix = apply(return_matrix, 1, as.list)
 
-            return_list <- list(return_matrix,intercept,slope,my_title,my_ois_title,my_meta1$title,my_meta2$title,my_meta1$alarm_lowerlimit, my_meta1$alarm_upperlimit,my_meta2$alarm_lowerlimit, my_meta2$alarm_upperlimit,my_meta1$lowerlimit, my_meta1$upperlimit,my_meta2$lowerlimit, my_meta2$upperlimit)
-            names(return_list) <-c("matrix","intercept","slope","title","ois_title","xTitle","yTitle","xAlarmLowerLimit","xAlarmUpperLimit","yAlarmLowerLimit","yAlarmUpperLimit","xLowerLimit","xUpperLimit","yLowerLimit","yUpperLimit")
+            return_list <- list(return_matrix,intercept,slope,my_title,my_ois_title,my_meta1$title,my_meta2$title,my_meta1$alarm_lowerlimit, my_meta1$alarm_upperlimit,my_meta2$alarm_lowerlimit, my_meta2$alarm_upperlimit,my_meta1$lowerlimit, my_meta1$upperlimit,my_meta2$lowerlimit, my_meta2$upperlimit,"interactive")
+            names(return_list) <-c("matrix","intercept","slope","title","ois_title","xTitle","yTitle","xAlarmLowerLimit","xAlarmUpperLimit","yAlarmLowerLimit","yAlarmUpperLimit","xLowerLimit","xUpperLimit","yLowerLimit","yUpperLimit","imagetype")
             rm(plot_frame)
             gc()
             return(return_list)
@@ -247,11 +248,14 @@ output_data <- tryCatch(
 						if (imagetype == "vector") {
         					svglite(localResultFile);
     					} else {
-							png(filename=localResultFile)
+							png(filename=localResultFile, width = 600, height = 600)
 						}
 						dbcon <- connectDB()
 						data <- deploy_scatplot_fast(varids,oitype,oiids,starttime,endtime,timeunit,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Scatter plot"
+						data["width"] = 600
+    					data["height"] = 600						
 						data
 					}
 			)

@@ -25,7 +25,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
- * The Class UserPrincipal.
+ * UserPrincipal.
  *
  * @author Markus Ylikerälä, Pekka Siltanen
  */
@@ -36,13 +36,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import fi.vtt.openva.domain.Account;
 
-/**
- * UserPrincipal
- * 
- * @author Markus Ylikerälä, Pekka Siltanen
- *
- */
-
 public class UserPrincipal  implements UserDetails{
 	private static final long serialVersionUID = 7649614807058895611L;
 	private Account account;
@@ -51,6 +44,10 @@ public class UserPrincipal  implements UserDetails{
         this.account = account;
     }
      
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	} 
  
     public String getPassword() {
         return account.getPassword();   
@@ -77,13 +74,6 @@ public class UserPrincipal  implements UserDetails{
     }
  
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return true;
     }
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
-	} 
-
 }

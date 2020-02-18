@@ -25,7 +25,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
- * The Class AccessRESTController.
+ * AccessRESTController
  *
  * @author Pekka Siltanen
  */
@@ -38,15 +38,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
-/**
- * AccessRESTController
- * 
- * @author Pekka Siltanen
- *
- * Not used anywhere, may become obsolete
- */
-
 @RestController
 @RequestMapping("/query")
 public class AccessRESTController {
@@ -54,5 +45,21 @@ public class AccessRESTController {
 	public Principal user(Principal user) {
 		return user;
 	}
+	
+//    @RequestMapping(value = "/userInfo/{name}", method = RequestMethod.GET)
+//    public String userInfo(@PathVariable String name){
+//         
+//        try {       
+//            Gson gson = new Gson();
+//            Authentication authentication = SecurityConfiguration.getAuthentication();
+//            Object o = authentication.getPrincipal();       
+//            UserPrincipal ud = (UserPrincipal) authentication.getPrincipal();
+//            return gson.toJson(ud.getRole());
+// 
+//        } catch (Throwable e) {
+//            e.printStackTrace();
+//            return "Bizarre: ";
+//        }
+//    }	
 	
 }

@@ -59,6 +59,10 @@ public class Application implements java.io.Serializable {
 	
 	/** The time deleted. */
 	private LocalDateTime timeDeleted;
+	
+	private LocalDateTime maxTime;
+	
+	private LocalDateTime minTime;
 
 	/**
 	 * Instantiates a new application.
@@ -84,12 +88,14 @@ public class Application implements java.io.Serializable {
 	 * @param timeCreated the time created
 	 * @param timeDeleted the time deleted
 	 */
-	public Application(int id, String title, String description, LocalDateTime timeCreated, LocalDateTime timeDeleted) {
+	public Application(int id, String title, String description, LocalDateTime timeCreated, LocalDateTime timeDeleted,LocalDateTime maxTime,LocalDateTime minTime) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.timeCreated = timeCreated;
 		this.timeDeleted = timeDeleted;
+		this.maxTime = maxTime;
+		this.minTime = minTime;
 	}
 
 	/**
@@ -190,4 +196,43 @@ public class Application implements java.io.Serializable {
 		this.timeDeleted = timeDeleted;
 	}
 
+	
+	/**
+	 * Gets the max time.
+	 *
+	 * @return the max time
+	 */
+	@Column(name = "max_time", length = 29)
+	public LocalDateTime getMaxTime() {
+		return this.maxTime;
+	}
+
+	/**
+	 * Sets the max time .
+	 *
+	 * @param maxTime the new max time
+	 */
+	public void setMaxTime(LocalDateTime maxTime) {
+		this.maxTime = maxTime;
+	}
+	
+	/**
+	 * Gets the min time.
+	 *
+	 * @return the min time
+	 */
+	@Column(name = "min_time", length = 29)
+	public LocalDateTime getMinTime() {
+		return this.minTime;
+	}
+
+	/**
+	 * Sets the min time
+	 *
+	 * @param minTime the new min time
+	 */
+	public void setMinTime(LocalDateTime minTime) {
+		this.minTime = minTime;
+	}
+	
 }

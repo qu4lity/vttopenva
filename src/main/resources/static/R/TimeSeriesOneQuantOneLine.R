@@ -65,6 +65,7 @@ source(paste(scriptPath, "common.R", sep="/"))
 
 connectDB <- function()
 {
+	Sys.setenv("TZ"="UTC")
 	psql <- dbDriver("PostgreSQL")
 	dbcon <- dbConnect(psql, host="<host>", port=<port>, dbname="<dbname>",user="<user>",pass="<password>")
 	return(dbcon)
@@ -81,12 +82,11 @@ deploy_ts_quant_1var_1plot1line=function(variableid,oitype,oiids, starttime=NULL
 
    
     n=nrow(plot_frame)
-   
-    if (n>0) {
-        my_ois=getOIs(dbcon,oiids_temp) 
-        oi_title=paste(my_ois[,c("report_title")],collapse = ',')
+    my_ois=getOIs(dbcon,oiids_temp) 
+    oi_title=paste(my_ois[,c("report_title")],collapse = ',')
 
-        my_meta=getMetadata(dbcon,variableid)
+    my_meta=getMetadata(dbcon,variableid)
+    if (n>0) {
         operation=my_meta$plottype
         timeunit=paste(plot_time_unit,"s",sep="")
         zoo_frame=zoo(plot_frame$measurement_value,plot_frame$measurement_time)
@@ -160,7 +160,7 @@ deploy_ts_quant_1var_1plot1line=function(variableid,oitype,oiids, starttime=NULL
     } else {
         rm(plot_frame)
         gc()
-        stop(paste("OpenVA warning: No data found,", my_ois_title,my_meta$report_title  ))
+        stop(paste("OpenVA warning: No data found,",oi_title, my_meta$report_title  ))
     }
 }
 
@@ -205,7 +205,7 @@ smooth_ts=function(plot_frame,n_data_frame,meta,oi_titles,starttime,endtime,plot
   
 
   if (n>1) { 
-    plot(my_time,y, type="b",cex.main=0.9,cex.sub=0.8,cex.axis=0.9,
+    plot(my_time,y, type="l",cex.main=0.9,cex.sub=0.8,cex.axis=0.9,
          col="black",lwd=1, main=paste(meta$report_title, 
                                        "\n",oi_titles,"\n",
                                        "n=",n_data_frame,"\n",starttime," - ",endtime),
@@ -317,6 +317,9 @@ output_data <- tryCatch(
 						dbcon <- connectDB()
 						data <- deploy_ts_quant_1var_1plot1line(varids,oitype,oiids, starttime,endtime,timeunit,dbcon,imagetype)
 						data["image"] = resultUrl
+						data["title"] = "Single timeseries"	
+						data["width"] = 600
+    					data["height"] = 600											
 						data
 					}
 			)

@@ -62,7 +62,6 @@ function addSvgElement(id,w,h) {
 }
 
 function addSvgRoot(id,w,h) {
-	var style = "height:auto !important;min-height:" + h +"px;width:auto !important;min-width:"+ w +"px";
 
 	var svg =  d3.select("#" + id + " > #svgcontainer")
 				 .append("svg")
@@ -138,7 +137,6 @@ function addMainTitle(mainTitle,svg,totalw,margin,top,style) {
 	var splittedMainTitle = mainTitle.split(/[\r\n]+/);
 	
 	var topPosition = top + margin.top/10;
-	var style;
 	
 	var mainText = svg.append("text")
 	.attr("class",style)

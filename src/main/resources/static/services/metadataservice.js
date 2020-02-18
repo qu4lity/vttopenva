@@ -42,41 +42,61 @@
 //
 // @author Pekka Siltanen
 
-app.factory('metadataService',['$http','$window',function($http,$window){
-		var failed = false;
-	
+app.factory('metadataService',['$http','$window','$q',function($http,$window,$q){
+		let failed = false;
+		function authenticationError() {
+			if (!failed) {
+				alert('Database query failed. You may need to logout/login again.');
+				failed = true;
+			}
+		}
 		function connectionError() {
-			$window.alert('Database query failed. If the problem recurs, please contact software administrator.')
+			$window.alert('Database query failed. If the problem recurs, please contact software administrator.');
 		}
 		
+		function unexpectedError() {
+			$window.alert('Unexpected error. If the problem recurs, please contact software administrator.');
+		}
+		
+		// have to cancel request if new arrives: otherwisevisualization list updates are not in correct order
+		let canceler = $q.defer();
+		function getVisualizationCandidates(ois,vars,applicationTitle){
+			if (ois.length == 0) {
+				ois="-1";
+			}
+			if (vars.length == 0 ) {
+				vars="-1";
+			}
+			
+			canceler.resolve();
+			canceler = $q.defer();			
+			let variables = 'query/getVisualisationCandidates/' + ois + '/' + vars + '/' + applicationTitle; 
+			
+			return  $http({
+		        method: "GET",
+		        url: 'query/getVisualisationCandidates/' + ois + '/' + vars + '/' + applicationTitle,
+		        timeout: canceler.promise,
+		    }).then(function(response){ 
+				if (typeof response.data === 'string' || response.data instanceof String) {
+					// this is a hack to handle session timeout redirection
+					authenticationError();
+				} else {
+					return response.data;
+				}
+			},function(response){ 
+				console.log("cancelled")
+			});
+		};
+		
+		
+		
 		return {
-			getVisualizationCandidates : function(ois,vars,applicationTitle){
-				return  $http.get('query/getVisualisationCandidates/' + ois + '/' + vars + '/' + applicationTitle)
-				.then(function(response){ 
-					if (typeof response.data === 'string' || response.data instanceof String) {
-						// this is a hack to handle session time out redirection
-						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
-							failed = true;
-							$window.location.href = '/logout'
-						}
-					} else {
-						return response.data;
-					}	
-				},function(response){ 
-					connectionError();
-				});
-			},
+			getVisualizationCandidates : getVisualizationCandidates,
 			getVariables : function(oiId, propertyId){
 				return  $http.get('query/getVariables/' + oiId + '/' + propertyId)
 				.then(function(response){
 					if (typeof response.data === 'string' || response.data instanceof String) {
-						// this is a hack to handle session time out redirection
-						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
-							failed = true;
-							$window.location.href = '/logout'
-						}
+						authenticationError();
 					} else {
 						return response.data;
 					}	
@@ -88,15 +108,34 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 				return  $http.get('query/getVariablesByOiTypeTitle/' + oiTypeTitle + '/' + propertyId)
 				.then(function(response){
 					if (typeof response.data === 'string' || response.data instanceof String) {
-						// this is a hack to handle session time out redirection
-						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
-							failed = true;
-							$window.location.href = '/logout'
-						}
+						authenticationError();
 					} else {
 						return response.data;
-					}	
+					}
+				},function(response){ 
+					connectionError(); 
+				});
+			},
+			getVariableGroups : function(oiTypeId, groupTitle){
+				return  $http.get('query/getVariableGroups/')
+				.then(function(response){
+					if (typeof response.data === 'string' || response.data instanceof String) {
+						authenticationError();
+					} else {
+						return response.data;
+					}
+				},function(response){ 
+					connectionError(); 
+				});
+			},
+			getVariablesByGroup : function(oiTypeId, groupTitle){
+				return  $http.get('query/getVariablesByGroup/' + oiTypeId + '/' + groupTitle)
+				.then(function(response){
+					if (typeof response.data === 'string' || response.data instanceof String) {
+						authenticationError();
+					} else {
+						return response.data;
+					}
 				},function(response){ 
 					connectionError(); 
 				});
@@ -106,7 +145,7 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
 						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
+							$window.alert('Server request failed. Please login again.')
 							failed = true;
 							$window.location.href = '/logout'
 						}
@@ -124,7 +163,7 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
 						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
+							$window.alert('Server request failed. Please login again.')
 							failed = true;
 							$window.location.href = '/logout'
 						}
@@ -140,7 +179,7 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
 						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
+							$window.alert('Server request failed. Please login again.')
 							failed = true;
 							$window.location.href = '/logout'
 						}
@@ -156,7 +195,7 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
 						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
+							$window.alert('Server request failed. Please login again.')
 							failed = true;
 							$window.location.href = '/logout'
 						}
@@ -167,47 +206,47 @@ app.factory('metadataService',['$http','$window',function($http,$window){
 					connectionError(); 
 				});
 			},
-			getMaxMinDateTime : function(typePropTitle){
-				return  $http.get('query/getMinMaxTime').then(function(response){
+			getMaxMinDateTime : function(applicationTitle){
+				return  $http.get('query/getMinMaxTime/' + applicationTitle).then(function(response){
 					if (typeof response.data === 'string' || response.data instanceof String) {
 						// this is a hack to handle session time out redirection
 						if (!failed) {
-							$window.alert('Command failed because of session timeout. Please login again.')
+							$window.alert('Server request failed. Please login again.')
 							failed = true;
 							$window.location.href = '/logout'
 						}
 					} 	
-					var startYear = String(response.data[0][0].date.year);
-					var endYear = String(response.data[0][1].date.year);
-					
-					var startMonth = String(response.data[0][0].date.month);
-					if (startMonth.length==1) startMonth = "0" + startMonth;
-					var endMonth = String(response.data[0][1].date.month);
-					if (endMonth.length==1) endMonth = "0" + endMonth;
-					
-					var startDay = String(response.data[0][0].date.day);
-					if (startDay.length==1) startDay = "0" + startDay;
-					var endDay = String(response.data[0][1].date.day);
-					if (endDay.length==1) endDay = "0" + endDay;
-					
-					var startHour = String(response.data[0][0].time.hour);
-					if (startHour.length==1) startHour = "0" + startHour;
-					var endHour = String(response.data[0][1].time.hour);
-					if (endHour.length==1) endHour = "0" + endHour;
-					
-					var startMinute = String(response.data[0][0].time.minute);
-					if (startMinute.length==1) startMinute = "0" + startMinute;
-					var endMinute = String(response.data[0][1].time.minute);
-					if (endMinute.length==1) endMinute = "0" + endMinute;
-					
-					var startSecond = String(response.data[0][0].time.second);
-					if (startSecond.length==1) startSecond = "0" + startSecond;
-					var endSecond = String(response.data[0][1].time.second);
-					if (endSecond.length==1) endSecond = "0" + endSecond;
-					var retVal = {min: startYear + "-" + startMonth + "-" + startDay + " " + startHour + ":" + startMinute + ":" + startSecond,
-								  max: endYear + "-" + endMonth + "-" + endDay + " " + endHour + ":" + endMinute + ":" + endSecond};
+//					var startYear = String(response.data[0][0].date.year);
+//					var endYear = String(response.data[0][1].date.year);
+//					
+//					var startMonth = String(response.data[0][0].date.month);
+//					if (startMonth.length==1) startMonth = "0" + startMonth;
+//					var endMonth = String(response.data[0][1].date.month);
+//					if (endMonth.length==1) endMonth = "0" + endMonth;
+//					
+//					var startDay = String(response.data[0][0].date.day);
+//					if (startDay.length==1) startDay = "0" + startDay;
+//					var endDay = String(response.data[0][1].date.day);
+//					if (endDay.length==1) endDay = "0" + endDay;
+//					
+//					var startHour = String(response.data[0][0].time.hour);
+//					if (startHour.length==1) startHour = "0" + startHour;
+//					var endHour = String(response.data[0][1].time.hour);
+//					if (endHour.length==1) endHour = "0" + endHour;
+//					
+//					var startMinute = String(response.data[0][0].time.minute);
+//					if (startMinute.length==1) startMinute = "0" + startMinute;
+//					var endMinute = String(response.data[0][1].time.minute);
+//					if (endMinute.length==1) endMinute = "0" + endMinute;
+//					
+//					var startSecond = String(response.data[0][0].time.second);
+//					if (startSecond.length==1) startSecond = "0" + startSecond;
+//					var endSecond = String(response.data[0][1].time.second);
+//					if (endSecond.length==1) endSecond = "0" + endSecond;
+//					var retVal = {min: startYear + "-" + startMonth + "-" + startDay + " " + startHour + ":" + startMinute + ":" + startSecond,
+//								  max: endYear + "-" + endMonth + "-" + endDay + " " + endHour + ":" + endMinute + ":" + endSecond};
 
-					
+					var retVal = {min: response.data[0].replace("T"," "), max: response.data[1].replace("T"," ")}
 					return retVal;
 				},function(response){ 
 					connectionError(); 
