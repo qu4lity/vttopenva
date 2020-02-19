@@ -10,4 +10,4 @@ VTT OpenVA is independent of the underlying data collection solution.The data ca
 
 # Quick start
 
-If you want to see how VTT OpenVA works, there is a there are two Docker containers that demonstrate OpenVA in action. Download [docker-compose.yml](https://github.com/pekka-siltanen/vttopenva/blob/master/docker-compose.yml), run _docker-compose up -d_  in the same directory and open _http://localhost:8080_ in your browser. Additional instructions on the Docker demo can be found here.
+If you want to see how VTT OpenVA works, there is a there are two Docker containers that demonstrate OpenVA in action. Download [docker-compose.yml](https://github.com/pekka-siltanen/vttopenva/blob/master/docker-compose.yml), run _docker-compose up -d_  in the same directory and open _http://localhost:8080_ in your browser. Additional instructions on the Docker demo can be found [here](https://github.com/pekka-siltanen/vttopenva/wiki/Docker-demo).
