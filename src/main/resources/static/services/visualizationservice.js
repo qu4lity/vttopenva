@@ -31,12 +31,12 @@ app.factory('visualizationService',['analysisService', 'parameterService','$time
 		var visualizations = []; 
 		var spinner = [];
 		
-		function startSpinner (id) {
+		function startAnalysis (id) {
 			spinner[id] = showSpinner(id);
 			return spinner;
 		}
 		
-		function endSpinner(id) {
+		function endAnalysis(id) {
 			spinner[id].stop();
 			spinner[id] = null;
 		}
@@ -96,13 +96,13 @@ app.factory('visualizationService',['analysisService', 'parameterService','$time
 		}
 		
 		function runAnalysis(id,chartFunction,onClick,tooltip,params) {
-			startSpinner(id);
+			startAnalysis(id);
 			analysisService.run(parameterService.getVisualizationMethod(),params).then(function(response) { 
 				var window = {width: 640, height:640};
 				var position = ((visualizations.length%10)*10)%150;
 				window.top = position;
 				window.left = position;
-				endSpinner(id);
+				endAnalysis(id);
 				if (response == null) {
 					return;
 				}
@@ -174,8 +174,8 @@ app.factory('visualizationService',['analysisService', 'parameterService','$time
 		}
 		
 		return {
-			startSpinner: startSpinner,
-			endSpinner: startSpinner,
+			startAnalysis: startAnalysis,
+			endAnalysis: endAnalysis,
 			addOpeningVisualizations: addOpeningVisualizations,
 			add : add,	
 
