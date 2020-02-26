@@ -14,5 +14,4 @@ If you want to see how VTT OpenVA works, there there are two Docker images that 
 
 # Find out more
 ## [Technical documents](https://github.com/pekka-siltanen/vttopenva/wiki/Technical-documents)
-## Setup Guide
 
