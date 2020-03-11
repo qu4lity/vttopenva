@@ -52,8 +52,8 @@ app.factory('configurationService',['parameterService','metadataService','$timeo
 			var conf = {
 							oiSelectionUi:"hierarchy",
 							applicationTitle: applicationTitle,
+							oiSelectionType: "ship",
 							oitype: "ship",
-							//oiTypeId: 2,
 							oiTypeId: 1,
 							initTimeRange:initTimeRange, 
 							specialVisualizations: ["SailingBar","AuxLoadAverageBar","FuelOilBar","DailyCount","CalculatedValuesTable","CalculatedValuesTableHours","CalculatedValuesTableAE","CalculatedValuesTableME","CalculatedValuesTableShip","TimeperiodHours"],
