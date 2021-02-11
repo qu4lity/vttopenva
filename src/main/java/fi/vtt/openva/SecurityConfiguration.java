@@ -51,7 +51,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 /**
  * SecurityConfiguration.
  *
- * @author Markus Ylikerälä, Pekka Siltanen
+ * @author Markus Ylikerï¿½lï¿½, Pekka Siltanen
  */
 
 @Configuration
@@ -104,8 +104,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return SecurityContextHolder.getContext().getAuthentication();
     }  
      
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public BCryptPasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
 }

@@ -226,10 +226,32 @@ function addSingleTimeSeries(svg,dataObject,w,h,margin,top,mainTitle,xTitle,yTit
 	});
 
 	var topPosition = top +margin.top; 
+	svg.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", w- (margin.left + margin.right) )
+        .attr("height", h -(margin.top+ margin.bottom) )
+        .attr("x", 0)
+        .attr("y", 0);
+
+
+
 	
 	var g = svg.append("g")
 	    .attr("transform",
 	          "translate(" + margin.left + "," + topPosition+ ")");
+	
+	var brush = d3.brushX()                   
+        .extent( [ [0,0], [w- (margin.left + margin.right),h -(margin.top+ margin.bottom)] ] )  
+        .on("end", updateChart);
+    var clip = g.append('g')
+      	.attr("clip-path", "url(#clip)")
+
+    	clip
+      	.append("g")
+        .attr("class", "brush")
+        .call(brush);   
+
 	
 	  // Scale the range of the data
 	 x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -238,34 +260,34 @@ function addSingleTimeSeries(svg,dataObject,w,h,margin,top,mainTitle,xTitle,yTit
 	 var upperlimits = [dataObject["upperlimit"],dataObject["alarm_upperlimit"],dataObject["outlier_upperlimit"],d3.max(data, function(d){return d.value; })];
 	 var lowerlimits = [dataObject["lowerlimit"],dataObject["alarm_lowerlimit"],dataObject["outlier_lowerlimit"],d3.min(data, function(d){return d.value; })];
 	 
-	 var minY = Math.min.apply(Math,lowerlimits.filter(Boolean)); // filters null values
-	 var maxY = Math.max.apply(Math,upperlimits.filter(Boolean));
+	 var minY = Math.min.apply(Math,lowerlimits.filter(function(e){ return e === 0 || e })); // filters null values
+	 var maxY = Math.max.apply(Math,upperlimits.filter(function(e){ return e === 0 || e }));
+	 if (!isFinite(minY)) {minY = 0;}
+	 if (!isFinite(maxY)) {maxY = 0;}
+
 	 //var minY = Math.min(d3.min(dataObject["limits"], function(d) { return  d.value; }),d3.min(data, function(d) { return  parseFloat(d.value); }));
 	 //var maxY = Math.max(d3.max(dataObject["limits"], function(d) { return  d.value; }),d3.max(data, function(d) { return  parseFloat(d.value); }));
 	 y.domain([minY, maxY]);
 
-	 addTimeseriesPath(g,x,y,data,color,pathLegendText);
+	 var path = addTimeseriesPath(clip,x,y,data,color,pathLegendText);
+	 var smooth;
 	 if ("smooth" in data[0]) {
-		addTimeseriesSmoothed(g,x,y,data,color);
+		smooth = addTimeseriesSmoothed(clip,x,y,data,color);
 	 } 
-	 addTimeseriesPoints(g,x,y,data);
+
+
+	 var points = addTimeseriesPoints(clip,x,y,data);
 	 
 	  var graphWidth = w- margin.left - margin.right;
 	  var graphHeight = h- margin.top - margin.bottom;
 	  
-	 var xax = g.append("g").attr("transform", "translate(0," + graphHeight + ")").call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")));
-	 xax.selectAll("text")
-	    .attr("y", 0)
-	    .attr("x", 9)
-	    .attr("dy", ".35em")
-	    .attr("transform", "rotate(90)")
-	    .style("text-anchor", "start");
+
 	    
 	  g.append("g").call(d3.axisLeft(y));	  
-	  g.append("g").attr("class", "yAxis").attr("transform", "translate( " + graphWidth + ", 0 )").call(d3.axisRight(y).ticks(0))
-	  g.append("g").attr("class", "xAxis").call(d3.axisTop(x).ticks(0));
-
-	  addXAxisTitle(g, w, h, margin, xTitle,xTitleStyle);
+	  var yAxis = g.append("g").attr("class", "yAxis").attr("transform", "translate( " + graphWidth + ", 0 )").call(d3.axisRight(y).ticks(0));
+	  //var xAxis = g.append("g").attr("class", "xAxis").call(d3.axisTop(x).ticks(0));
+	  var xAxis = addTimeseriesXAxis(g, x,graphHeight);
+	  //addXAxisTitle(g, w, h, margin, xTitle,xTitleStyle);
 	  addYAxisTitle(g, w, h, margin, yTitle); 
 	  addSubXTitle(g, w, h, margin, subTitle,xTitleStyle);  
 
@@ -287,7 +309,117 @@ function addSingleTimeSeries(svg,dataObject,w,h,margin,top,mainTitle,xTitle,yTit
 	  if (dataObject.mean != null) {
 		  addLine(g,x,y,x.invert(0),x.invert(w - margin.left - margin.right),dataObject.mean,dataObject.mean,"ts-mean", "Mean");
 	  }
+
+	var idleTimeout;
+    function idled() { 
+		idleTimeout = null;
+	}
+
+	var pathClass = path.attr("class");
+	var smoothClass;
+	if ("smooth" in data[0]) {
+		smoothClass = smooth.attr("class");
+	 } 
+
+    function updateChart() {
+      	extent = d3.event.selection
+      	if(!extent){
+        	if (!idleTimeout) return idleTimeout = setTimeout(idled, 350);
+        	x.domain([ 4,8])
+      	}else{
+        	x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+        	clip.select(".brush").call(brush.move, null)
+      	}
+
+      	xAxis.transition().duration(1000).call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d %H:%M:%S")))
+		xAxis.selectAll("text")
+	    .attr("y", 0)
+	    .attr("x", 9)
+	    .attr("dy", ".35em")
+	    .attr("transform", "rotate(90)")
+	    .style("text-anchor", "start")
+
+      	clip.select('.' + pathClass)
+          .transition()
+          .duration(500)
+          	.attr("d", d3.line()
+            .x(function(d) {return x(d.date) })
+            .y(function(d) { return y(d.value) })
+          )
+
+      	clip.select('.' + smoothClass)
+          .transition()
+          .duration(500)
+          	.attr("d", d3.line()
+            .x(function(d) {return x(d.date) })
+            .y(function(d) { return y(d.value) })
+          )
+
+      	clip.selectAll('.ts-point')
+          	.transition()
+          	.duration(1000)
+			.attr("cx", function(d) { return x(d.date)})
+			.attr("cy", function(d) { return y(d.value);})
+    }
+    svg.on("dblclick",function(){
+	
+      x.domain(d3.extent(data, function(d) { return d.date; }))
+      //xAxis.transition().call(d3.axisTop(x).ticks(0))
+      	xAxis.transition().duration(1000).call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d %H:%M:%S")))
+		xAxis.selectAll("text")
+	    .attr("y", 0)
+	    .attr("x", 9)
+	    .attr("dy", ".35em")
+	    .attr("transform", "rotate(90)")
+	    .style("text-anchor", "start")
+      	clip.select('.' + pathClass)
+          .transition()
+          .duration(500)
+          	.attr("d", d3.line()
+            .x(function(d) {console.log(d);  return x(d.date) })
+            .y(function(d) { return y(d.value) })
+          )
+      clip
+        .select('.' + pathClass)
+        .transition()
+          .duration(500)
+        .attr("d", d3.line()
+          .x(function(d) { console.log(d); return x(d.date) })
+          .y(function(d) { return y(d.value) })
+      )
+
+      clip.select('.' + smoothClass)
+          .transition()
+          .duration(500)
+          	.attr("d", d3.line()
+            .x(function(d) {return x(d.date) })
+            .y(function(d) { return y(d.value) })
+       )
+
+      clip.selectAll('.ts-point')
+          .transition()
+          .duration(1000)
+		.attr("cx", function(d) { return x(d.date)})
+		.attr("cy", function(d) { return y(d.value);})
+    });
 }
+
+function addBrush(svg) {
+	
+}
+
+
+function addTimeseriesXAxis(g, x,graphHeight) {
+	 var xax = g.append("g").attr("transform", "translate(0," + graphHeight + ")").call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d %H:%M:%S")));
+	 xax.selectAll("text")
+	    .attr("y", 0)
+	    .attr("x", 9)
+	    .attr("dy", ".35em")
+	    .attr("transform", "rotate(90)")
+	    .style("text-anchor", "start");   
+	return xax;
+}
+
 
 function addTimeseriesPath(g,x,y,data,color,legendText) {
 	var line = d3.line()
@@ -314,6 +446,8 @@ function addTimeseriesPath(g,x,y,data,color,legendText) {
 	if (legendText != null) {
 		path.attr("data-legend",legendText);
 	}
+	
+	return path;
 }
 
 function addTimeseriesSmoothed(g,x,y,data,color) {
@@ -327,24 +461,26 @@ function addTimeseriesSmoothed(g,x,y,data,color) {
     } else {
     	linestyle = "ts-smooth-line-" + color;
     }
-	g.append("path")
+	var path = g.append("path")
       .datum(data)
       .attr("class", linestyle)
       .attr("d", line)
       .attr("fill","none");
+	return path;
 }
 
 function addTimeseriesPoints(g,x,y,data) {
-	g.selectAll("empty")
+	var gret = g.selectAll("empty")
 		 .data(data)
 		 .enter()
 		 .append("circle")
 		.attr("class", "ts-point")
 		.attr("cx", function(d) { return x(d.date)})
 		.attr("cy", function(d) { return y(d.value);})	
+		.attr("pointer-events", "all")
 	    .on("mouseover", function(d) {
 	        d3.select(this).attr("fill", "white");
-	        return tip.show(d.date.toString() + ", " + d.value.toString(), this);  
+	        return tip.show(moment(d.date).format('Y-m-d H:M:S') + ", " + d.value.toString(), this);  
 	    }).on("mouseout", function() {
 	         d3.select(this).attr("fill", "black");
 	        return tip.hide();
@@ -354,11 +490,13 @@ function addTimeseriesPoints(g,x,y,data) {
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-        console.log(d);
-        return "<span style='color:black'>" + d + "</span>";
+        return "<span style='color:yellow'>" + d + "</span>";
     })
  
     g.call(tip);
+
+	return gret;
+
 }
 
 function TimeSeriesOneQuantOnePlotPerOi(response,window_,id,points,onClickTimeSeries, tooltipTimeSeries) {
