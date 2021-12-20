@@ -17,8 +17,9 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.test.skip>false</maven.test.skip>
+		<maven.test.skip>true</maven.test.skip>
 		<start-class>fi.vtt.openva.OpenVAApp</start-class>
+		<version>2.2.6.RELEASE</version>
 	</properties>
 
 	<dependencies>
