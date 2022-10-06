@@ -1,4 +1,7 @@
 # VTT OpenVA
+
+VTT OpenVA platform consist of software components that are used as building blocks of visual analytics tools which have been utilised in the QU4LITY project and have been cloned from https://github.com/pekka-siltanen/vttopenva
+
 VTT OpenVA platform consist of software components that are used as building blocks of visual analytics tools:
 
 * A database that stores the application data in a standard domain independent form
